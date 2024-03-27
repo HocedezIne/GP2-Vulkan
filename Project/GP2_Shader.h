@@ -5,6 +5,12 @@
 
 #include "GP2_Vertex.h"
 
+const std::vector<GP2_Vertex> m_Vertices = {
+{{0.0f, -0.5f}, {1.0f, 0.0f, 0.0f}},
+{{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},
+{{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}}
+};
+
 class GP2_Shader final
 {
 public:
