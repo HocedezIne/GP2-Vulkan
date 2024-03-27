@@ -18,6 +18,8 @@
 #include <limits>
 #include <algorithm>
 
+#include "GP2_Shader.h"
+
 
 const std::vector<const char*> validationLayers = {
 	"VK_LAYER_KHRONOS_validation"
@@ -67,6 +69,8 @@ private:
 		createImageViews();
 		
 		// week 03
+		m_GradientShader.Initialize(device);
+
 		createRenderPass();
 		createGraphicsPipeline();
 		createFrameBuffers();
@@ -101,6 +105,8 @@ private:
 		vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
 		vkDestroyRenderPass(device, renderPass, nullptr);
 
+		m_GradientShader.DestroyShaderModules(device);
+
 		for (auto imageView : swapChainImageViews) {
 			vkDestroyImageView(device, imageView, nullptr);
 		}
@@ -128,7 +134,7 @@ private:
 		}
 	}
 
-	
+	GP2_Shader m_GradientShader{ "shaders/shader.vert.spv", "shaders/shader.frag.spv" };
 
 	// Week 01: 
 	// Actual window
