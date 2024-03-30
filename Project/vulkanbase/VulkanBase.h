@@ -19,6 +19,7 @@
 #include <algorithm>
 
 #include "GP2_Shader.h"
+#include "GP2_CommandPool.h"
 
 
 const std::vector<const char*> validationLayers = {
@@ -75,8 +76,8 @@ private:
 		createGraphicsPipeline();
 		createFrameBuffers();
 		// week 02
-		createCommandPool();
-		createCommandBuffer();
+		m_CommandPool.Initialize(device, findQueueFamilies(physicalDevice));
+		m_CommandBuffer = m_CommandPool.CreateCommandBuffer();
 
 		// week 06
 		createSyncObjects();
@@ -96,7 +97,8 @@ private:
 		vkDestroySemaphore(device, imageAvailableSemaphore, nullptr);
 		vkDestroyFence(device, inFlightFence, nullptr);
 
-		vkDestroyCommandPool(device, commandPool, nullptr);
+		m_CommandPool.Destroy();
+
 		for (auto framebuffer : swapChainFramebuffers) {
 			vkDestroyFramebuffer(device, framebuffer, nullptr);
 		}
@@ -149,8 +151,8 @@ private:
 	// Queue families
 	// CommandBuffer concept
 
-	VkCommandPool commandPool;
-	VkCommandBuffer commandBuffer;
+	GP2_CommandPool m_CommandPool;
+	GP2_CommandBuffer m_CommandBuffer;
 
 	QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
 
