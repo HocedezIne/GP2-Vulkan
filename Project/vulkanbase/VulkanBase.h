@@ -20,6 +20,7 @@
 
 #include "GP2_Shader.h"
 #include "GP2_CommandPool.h"
+#include "GP2_Mesh.h"
 
 
 const std::vector<const char*> validationLayers = {
@@ -68,16 +69,21 @@ private:
 		// week 04 
 		createSwapChain();
 		createImageViews();
+
+		m_CommandPool.Initialize(device, findQueueFamilies(physicalDevice));
+		m_CommandBuffer = m_CommandPool.CreateCommandBuffer();
 		
 		// week 03
 		m_GradientShader.Initialize(device);
 
+		m_TriangleMesh.AddVertex({ -0.5f, 0.5f, 0.f }, { 0.f, 0.f, 1.f });
+		m_TriangleMesh.AddVertex({ 0.5f, 0.5f, 0.f }, { 0.f, 1.f, 0.f });
+		m_TriangleMesh.AddVertex({ 0.f, -0.5f, 0.f }, { 1.f, 1.f, 1.f });
+		m_TriangleMesh.Initialize(device, physicalDevice, m_CommandBuffer);
+
 		createRenderPass();
 		createGraphicsPipeline();
 		createFrameBuffers();
-		// week 02
-		m_CommandPool.Initialize(device, findQueueFamilies(physicalDevice));
-		m_CommandBuffer = m_CommandPool.CreateCommandBuffer();
 
 		// week 06
 		createSyncObjects();
@@ -96,6 +102,8 @@ private:
 		vkDestroySemaphore(device, renderFinishedSemaphore, nullptr);
 		vkDestroySemaphore(device, imageAvailableSemaphore, nullptr);
 		vkDestroyFence(device, inFlightFence, nullptr);
+
+		m_TriangleMesh.DestroyMesh();
 
 		m_CommandPool.Destroy();
 
@@ -123,10 +131,6 @@ private:
 		glfwDestroyWindow(window);
 		glfwTerminate();
 	}
-
-	
-
-	
 
 	void createSurface() {
 		if (glfwCreateWindowSurface(instance, window, nullptr, &surface) != VK_SUCCESS) {
@@ -157,9 +161,6 @@ private:
 	QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
 
 	void drawFrame(uint32_t imageIndex);
-	void createCommandBuffer();
-	void createCommandPool(); 
-	void recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex);
 	
 	// Week 03
 	// Renderpass concept
@@ -169,6 +170,8 @@ private:
 	VkPipelineLayout pipelineLayout;
 	VkPipeline graphicsPipeline;
 	VkRenderPass renderPass;
+
+	GP2_Mesh m_TriangleMesh;
 
 	void createFrameBuffers();
 	void createRenderPass();

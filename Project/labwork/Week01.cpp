@@ -8,5 +8,5 @@ void VulkanBase::initWindow() {
 }
 
 void VulkanBase::drawScene() {
-	vkCmdDraw(m_CommandBuffer.GetVkCommandBuffer(), static_cast<uint32_t>(m_Vertices.size()), 1, 0, 0);
+	m_TriangleMesh.Draw();
 }
