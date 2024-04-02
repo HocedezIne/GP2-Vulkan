@@ -5,12 +5,6 @@
 
 #include "GP2_Vertex.h"
 
-const std::vector<GP2_Vertex> m_Vertices = {
-{{0.0f, -0.5f}, {1.0f, 0.0f, 0.0f}},
-{{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},
-{{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}}
-};
-
 class GP2_Shader final
 {
 public:
@@ -19,9 +13,9 @@ public:
 	{};
 
 	void Initialize(const VkDevice& vkDevice);
-	~GP2_Shader() = default;
+	~GP2_Shader() { DestroyShaderModules(); };
 
-	void DestroyShaderModules(const VkDevice& vkdevice);
+	void DestroyShaderModules();
 
 	GP2_Shader(const GP2_Shader&) = delete;
 	GP2_Shader& operator=(const GP2_Shader&) = delete;
@@ -34,10 +28,10 @@ public:
 	std::vector<VkPipelineShaderStageCreateInfo>& GetShaderStages() { return m_ShaderStages; };
 
 private:
-	VkPipelineShaderStageCreateInfo CreateFragmentShaderInfo(const VkDevice& vkDevice);
-	VkPipelineShaderStageCreateInfo CreateVertexShaderInfo(const VkDevice& vkDevice);
+	VkPipelineShaderStageCreateInfo CreateFragmentShaderInfo();
+	VkPipelineShaderStageCreateInfo CreateVertexShaderInfo();
 
-	VkShaderModule CreateShaderModule(const VkDevice& vkDevice, const std::vector<char>& code);
+	VkShaderModule CreateShaderModule(const std::vector<char>& code);
 
 	std::string m_VertexShaderFile;
 	std::string m_FragmentShaderFile;
@@ -46,4 +40,6 @@ private:
 	std::array<VkVertexInputAttributeDescription, 2> m_AttributeDescription{};
 
 	std::vector<VkPipelineShaderStageCreateInfo> m_ShaderStages;
+
+	VkDevice m_Device{VK_NULL_HANDLE};
 };

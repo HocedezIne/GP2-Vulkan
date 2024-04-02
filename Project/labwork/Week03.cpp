@@ -136,5 +136,5 @@ void VulkanBase::createGraphicsPipeline() {
 		throw std::runtime_error("failed to create graphics pipeline!");
 	}
 
-	m_GradientShader.DestroyShaderModules(device);
+	m_GradientShader.DestroyShaderModules();
 }

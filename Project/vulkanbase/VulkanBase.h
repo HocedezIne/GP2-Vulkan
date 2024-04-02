@@ -79,7 +79,7 @@ private:
 		m_TriangleMesh.AddVertex({ -0.5f, 0.5f, 0.f }, { 0.f, 0.f, 1.f });
 		m_TriangleMesh.AddVertex({ 0.5f, 0.5f, 0.f }, { 0.f, 1.f, 0.f });
 		m_TriangleMesh.AddVertex({ 0.f, -0.5f, 0.f }, { 1.f, 1.f, 1.f });
-		m_TriangleMesh.Initialize(device, physicalDevice, m_CommandBuffer);
+		m_TriangleMesh.Initialize(device, physicalDevice, m_CommandBuffer, findQueueFamilies(physicalDevice), graphicsQueue);
 
 		createRenderPass();
 		createGraphicsPipeline();
