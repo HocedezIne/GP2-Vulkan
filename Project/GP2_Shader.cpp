@@ -26,12 +26,12 @@ VkPipelineVertexInputStateCreateInfo GP2_Shader::CreateVertexInputStateInfo()
 {
 	VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
 	vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-	//vertexInputInfo.vertexBindingDescriptionCount = 1;
-	//vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(m_AttributeDescription.size());
-	//vertexInputInfo.pVertexBindingDescriptions = &m_BindingDescription;
-	//vertexInputInfo.pVertexAttributeDescriptions = m_AttributeDescription.data();
-	vertexInputInfo.vertexBindingDescriptionCount = 0;
-	vertexInputInfo.vertexAttributeDescriptionCount = 0;
+	vertexInputInfo.vertexBindingDescriptionCount = 1;
+	vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(m_AttributeDescription.size());
+	vertexInputInfo.pVertexBindingDescriptions = &m_BindingDescription;
+	vertexInputInfo.pVertexAttributeDescriptions = m_AttributeDescription.data();
+	//vertexInputInfo.vertexBindingDescriptionCount = 0;
+	//vertexInputInfo.vertexAttributeDescriptionCount = 0;
 	return vertexInputInfo;
 }
 
