@@ -21,11 +21,15 @@ public:
 
 	void AddVertex(const glm::vec3& pos, const glm::vec3& color);
 	void AddVertex(std::vector<GP2_Vertex> vertices);
+	void AddIndex(uint16_t index);
+	void AddIndex(std::vector<uint16_t> indices);
 
 private:	
 	GP2_Buffer* m_VertexBuffer;
+	GP2_Buffer* m_IndexBuffer;
 
 	std::vector<GP2_Vertex> m_Vertices{};
+	std::vector<uint16_t> m_Indices{};
 
 	VkDevice m_VkDevice{ VK_NULL_HANDLE };
 	GP2_CommandBuffer m_CommandBuffer{};

@@ -76,9 +76,10 @@ private:
 		// week 03
 		m_GradientShader.Initialize(device);
 
-		m_TriangleMesh.AddVertex({ -0.5f, 0.5f, 0.f }, { 0.f, 0.f, 1.f });
-		m_TriangleMesh.AddVertex({ 0.5f, 0.5f, 0.f }, { 0.f, 1.f, 0.f });
 		m_TriangleMesh.AddVertex({ 0.f, -0.5f, 0.f }, { 1.f, 1.f, 1.f });
+		m_TriangleMesh.AddVertex({ 0.5f, 0.5f, 0.f }, { 0.f, 1.f, 0.f });
+		m_TriangleMesh.AddVertex({ -0.5f, 0.5f, 0.f }, { 0.f, 0.f, 1.f });
+		m_TriangleMesh.AddIndex({ 2,1,0 });
 		m_TriangleMesh.Initialize(device, physicalDevice, m_CommandBuffer, findQueueFamilies(physicalDevice), graphicsQueue);
 
 		createRenderPass();
