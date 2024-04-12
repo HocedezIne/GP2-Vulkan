@@ -35,7 +35,7 @@ struct GP2_Vertex {
 	}
 };
 
-struct UniformBufferObject {
+struct GP2_UBO {
 	glm::mat4 model;
 	glm::mat4 view;
 	glm::mat4 proj;

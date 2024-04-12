@@ -10,6 +10,9 @@ void GP2_Shader::Initialize(const VkDevice& vkDevice)
 
 	m_ShaderStages.push_back(CreateVertexShaderInfo());
 	m_ShaderStages.push_back(CreateFragmentShaderInfo());
+
+	m_DescriptorPool = new GP2_DescriptorPool<GP2_UBO>{vkDevice, static_cast<size_t>(3)};
+	m_DescriptorPool->Initialize();
 }
 
 void GP2_Shader::DestroyShaderModules()
@@ -30,8 +33,6 @@ VkPipelineVertexInputStateCreateInfo GP2_Shader::CreateVertexInputStateInfo()
 	vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(m_AttributeDescription.size());
 	vertexInputInfo.pVertexBindingDescriptions = &m_BindingDescription;
 	vertexInputInfo.pVertexAttributeDescriptions = m_AttributeDescription.data();
-	//vertexInputInfo.vertexBindingDescriptionCount = 0;
-	//vertexInputInfo.vertexAttributeDescriptionCount = 0;
 	return vertexInputInfo;
 }
 

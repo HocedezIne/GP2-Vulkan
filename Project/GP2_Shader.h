@@ -4,6 +4,7 @@
 #include <string>
 
 #include "GP2_Vertex.h"
+#include "GP2_DescriptorPool.h"
 
 class GP2_Shader final
 {
@@ -27,6 +28,8 @@ public:
 
 	std::vector<VkPipelineShaderStageCreateInfo>& GetShaderStages() { return m_ShaderStages; };
 
+	const VkDescriptorSetLayout& getDescriptorSetLayout() { return m_DescriptorPool->getDescriptorSetLayout(); };
+
 private:
 	VkPipelineShaderStageCreateInfo CreateFragmentShaderInfo();
 	VkPipelineShaderStageCreateInfo CreateVertexShaderInfo();
@@ -42,4 +45,7 @@ private:
 	std::vector<VkPipelineShaderStageCreateInfo> m_ShaderStages;
 
 	VkDevice m_Device{VK_NULL_HANDLE};
+
+	// UBO stuff
+	GP2_DescriptorPool<GP2_UBO>* m_DescriptorPool{VK_NULL_HANDLE};
 };

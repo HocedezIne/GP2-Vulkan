@@ -35,6 +35,8 @@ void GP2_Mesh::Draw()
 	m_VertexBuffer->BindAsVertexBuffer(m_CommandBuffer.GetVkCommandBuffer());
 	m_IndexBuffer->BindAsIndexBuffer(m_CommandBuffer.GetVkCommandBuffer());
 
+
+
 	//vkCmdDraw(m_CommandBuffer.GetVkCommandBuffer(), static_cast<uint32_t>(m_Vertices.size()), 1, 0, 0);
 	vkCmdDrawIndexed(m_CommandBuffer.GetVkCommandBuffer(), static_cast<uint32_t>(m_Indices.size()), 1, 0, 0, 0);
 }
