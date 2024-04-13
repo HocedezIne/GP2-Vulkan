@@ -8,6 +8,7 @@ void VulkanBase::initWindow() {
 }
 
 void VulkanBase::drawScene() {
+	m_ParsedMesh.Draw();
 	m_TriangleMesh.Draw();
 	m_RectMesh.Draw();
 	m_OvalMesh.Draw();
