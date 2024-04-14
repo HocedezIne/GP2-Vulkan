@@ -158,7 +158,7 @@ private:
 		}
 	}
 
-	GP2_Shader m_GradientShader{ "shaders/3Dshader.vert.spv", "shaders/3Dshader.frag.spv" };
+	GP2_Shader m_GradientShader{ "shaders/shader.vert.spv", "shaders/shader.frag.spv" };
 
 	// Week 01: 
 	// Actual window
