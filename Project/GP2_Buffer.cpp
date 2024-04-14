@@ -38,12 +38,17 @@ void GP2_Buffer::Destroy()
 	vkFreeMemory(m_VkDevice, m_BufferMemory, nullptr);
 }
 
-void GP2_Buffer::MapMemory(void* data)
+void GP2_Buffer::UploadMemoryData(void* data)
 {
 	void* diff;
 	vkMapMemory(m_VkDevice, m_BufferMemory, 0, m_Size, 0, &diff);
 	memcpy(diff, data, (size_t)m_Size);
 	vkUnmapMemory(m_VkDevice, m_BufferMemory);
+}
+
+void GP2_Buffer::MapMemory(void* data)
+{
+	vkMapMemory(m_VkDevice, m_BufferMemory, 0, m_Size, 0, &data);
 }
 
 void GP2_Buffer::CopyData(QueueFamilyIndices queueFamInd, GP2_Buffer sourceBuffer, VkQueue graphicsQueue)

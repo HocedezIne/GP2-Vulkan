@@ -45,6 +45,11 @@ void VulkanBase::drawFrame() {
 
 	m_CommandBuffer.Reset();
 	m_CommandBuffer.BeginRecording();
+
+	updateUniformBuffer(imageIndex);
+
+	vkCmdBindDescriptorSets(m_CommandBuffer.GetVkCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSets[imageIndex], 0, nullptr);
+
 	drawFrame(imageIndex);
 	m_CommandBuffer.EndRecording();
 
