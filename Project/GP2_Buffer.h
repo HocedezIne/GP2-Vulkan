@@ -1,5 +1,6 @@
 #pragma once
 #include <vulkan/vulkan_core.h>
+#include <vulkanbase/VulkanUtil.h>
 #include <stdexcept>
 
 #include "GP2_CommandPool.h"
@@ -8,7 +9,7 @@
 class GP2_Buffer
 {
 public:
-	GP2_Buffer(VkDevice device, VkPhysicalDevice physicalDevice, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties);
+	GP2_Buffer(const VulkanContext& context, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties);
 	~GP2_Buffer() /*{ Destroy(); }*/ = default;
 
 	void Destroy();

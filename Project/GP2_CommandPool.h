@@ -10,7 +10,7 @@ public:
 	GP2_CommandPool() = default;
 	~GP2_CommandPool() = default;
 
-	void Initialize(const VkDevice&, const QueueFamilyIndices&);
+	void Initialize(const VkDevice& device, const QueueFamilyIndices& queue);
 	void Destroy();
 
 	GP2_CommandBuffer CreateCommandBuffer() const;

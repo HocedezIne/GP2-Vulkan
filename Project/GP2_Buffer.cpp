@@ -2,8 +2,8 @@
 
 #include <vulkanbase/VulkanBase.h>
 
-GP2_Buffer::GP2_Buffer(VkDevice device, VkPhysicalDevice physicalDevice, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties) :
-	m_VkDevice(device), m_VkPhysicalDevice(physicalDevice), m_Size(size)
+GP2_Buffer::GP2_Buffer(const VulkanContext& context, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties) :
+	m_VkDevice(context.device), m_VkPhysicalDevice(context.physicalDevice), m_Size(size)
 {
 	VkBufferCreateInfo bufferInfo{};
 	bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
