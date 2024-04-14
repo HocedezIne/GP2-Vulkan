@@ -34,9 +34,3 @@ struct GP2_Vertex {
 		return attributeDescriptions;
 	}
 };
-
-struct GP2_UBO {
-	glm::mat4 model;
-	glm::mat4 view;
-	glm::mat4 proj;
-};

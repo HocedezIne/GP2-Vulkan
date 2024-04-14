@@ -10,9 +10,6 @@ void GP2_Shader::Initialize(const VkDevice& vkDevice)
 
 	m_ShaderStages.push_back(CreateVertexShaderInfo());
 	m_ShaderStages.push_back(CreateFragmentShaderInfo());
-
-	m_DescriptorPool = new GP2_DescriptorPool<GP2_UBO>{vkDevice, static_cast<size_t>(3)};
-	m_DescriptorPool->Initialize();
 }
 
 void GP2_Shader::DestroyShaderModules()
