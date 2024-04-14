@@ -14,7 +14,7 @@ public:
 	GP2_Mesh() = default;
 	~GP2_Mesh() = default;
 
-	void Initialize(VkDevice device, VkPhysicalDevice physicalDevice, GP2_CommandBuffer cmdBuffer, QueueFamilyIndices queueFamInd, VkQueue graphicsQueue);
+	void Initialize(const VulkanContext& context, GP2_CommandBuffer cmdBuffer, QueueFamilyIndices queueFamInd, VkQueue graphicsQueue);
 	void DestroyMesh();
 
 	void Draw();
