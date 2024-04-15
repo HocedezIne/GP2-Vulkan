@@ -30,6 +30,9 @@ void VulkanBase::drawFrame(uint32_t imageIndex) {
 	scissor.extent = swapChainExtent;
 	vkCmdSetScissor(m_CommandBuffer.GetVkCommandBuffer(), 0, 1, &scissor);
 
+	updateUniformBuffer(CURRENT_FRAME);
+	vkCmdBindDescriptorSets(m_CommandBuffer.GetVkCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSets[CURRENT_FRAME], 0, nullptr);
+
 	drawScene();
 	vkCmdEndRenderPass(m_CommandBuffer.GetVkCommandBuffer());
 }

@@ -82,33 +82,38 @@ private:
 		// week 03
 		m_GradientShader.Initialize(device);
 		createDescriptorSetLayout();
-		createUniformBuffers();
-		createDescriptorPool();
-		createDescriptorSets();
 
-
-		m_TriangleMesh.AddVertex({ 0.f, -0.5f, 0.f }, { 1.f, 1.f, 1.f });
+		/*m_TriangleMesh.AddVertex({ 0.f, -0.5f, 0.f }, { 1.f, 1.f, 1.f });
 		m_TriangleMesh.AddVertex({ 0.5f, 0.5f, 0.f }, { 0.f, 1.f, 0.f });
 		m_TriangleMesh.AddVertex({ -0.5f, 0.5f, 0.f }, { 0.f, 0.f, 1.f });
 		m_TriangleMesh.AddIndex({ 2,1,0 });
-		m_TriangleMesh.Initialize(VulkanContext{device, physicalDevice, renderPass, swapChainExtent}, m_CommandBuffer, findQueueFamilies(physicalDevice), graphicsQueue);
+		m_TriangleMesh.Initialize(VulkanContext{device, physicalDevice, renderPass, swapChainExtent}, m_CommandBuffer, findQueueFamilies(physicalDevice), graphicsQueue);*/
 
-		m_RectMesh.AddVertex({ 0.25f, -0.5f, 0.f }, { 1.f, 0.5f, 1.f });
-		m_RectMesh.AddVertex({ 0.25f, -0.75f, 0.f }, { 1.f, 0.f, 0.f });
-		m_RectMesh.AddVertex({ 0.75f, -0.5f, 0.f }, { 1.f, 1.f, 0.f });
-		m_RectMesh.AddVertex({ 0.75f, -0.75f, 0.f }, { 1.f, 1.f, 1.f });
-		m_RectMesh.AddIndex({ 2,1,0,3,1,2 });
+		m_RectMesh.AddVertex({
+	{{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
+	{{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
+	{{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
+	{{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}}
+			});
+		//m_RectMesh.AddVertex({ 0.25f, -0.75f, 0.f }, { 1.f, 0.f, 0.f });
+		//m_RectMesh.AddVertex({ 0.75f, -0.5f, 0.f }, { 1.f, 1.f, 0.f });
+		//m_RectMesh.AddVertex({ 0.75f, -0.75f, 0.f }, { 1.f, 1.f, 1.f });
+		m_RectMesh.AddIndex({ 0,1,2,2,3,0 });
 		m_RectMesh.Initialize(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent }, m_CommandBuffer, findQueueFamilies(physicalDevice), graphicsQueue);
 
-		m_OvalMesh.AddVertex({ -0.625f, -0.625f, 0.f }, { 1.f, 1.f, 0.f }); // 0
-		m_OvalMesh.AddVertex({ -0.625f, -0.375f, 0.f }, { 0.f, 1.f, 0.f }); // 1
-		m_OvalMesh.AddVertex({ -0.5f, -0.25f, 0.f }, { 0.f, 1.f, 1.f }); // 2
-		m_OvalMesh.AddVertex({ -0.375f, -0.375f, 0.f }, { 0.f, 0.f, 1.f }); // 3
-		m_OvalMesh.AddVertex({ -0.375f, -0.625f, 0.f }, { 1.f, 0.f, 1.f }); // 4
-		m_OvalMesh.AddVertex({ -0.5f, -0.75f, 0.f }, { 1.f,0.f,0.f }); // 5
-		m_OvalMesh.AddVertex({ -0.5f, -0.5f, 0.f }, { 1.f,1.f,1.f }); // center, 6
-		m_OvalMesh.AddIndex({ 1,6,0,2,6,1,3,6,2,4,6,3,5,6,4,0,6,5 });
-		m_OvalMesh.Initialize(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent }, m_CommandBuffer, findQueueFamilies(physicalDevice), graphicsQueue);
+		//m_OvalMesh.AddVertex({ -0.625f, -0.625f, 0.f }, { 1.f, 1.f, 0.f }); // 0
+		//m_OvalMesh.AddVertex({ -0.625f, -0.375f, 0.f }, { 0.f, 1.f, 0.f }); // 1
+		//m_OvalMesh.AddVertex({ -0.5f, -0.25f, 0.f }, { 0.f, 1.f, 1.f }); // 2
+		//m_OvalMesh.AddVertex({ -0.375f, -0.375f, 0.f }, { 0.f, 0.f, 1.f }); // 3
+		//m_OvalMesh.AddVertex({ -0.375f, -0.625f, 0.f }, { 1.f, 0.f, 1.f }); // 4
+		//m_OvalMesh.AddVertex({ -0.5f, -0.75f, 0.f }, { 1.f,0.f,0.f }); // 5
+		//m_OvalMesh.AddVertex({ -0.5f, -0.5f, 0.f }, { 1.f,1.f,1.f }); // center, 6
+		//m_OvalMesh.AddIndex({ 1,6,0,2,6,1,3,6,2,4,6,3,5,6,4,0,6,5 });
+		//m_OvalMesh.Initialize(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent }, m_CommandBuffer, findQueueFamilies(physicalDevice), graphicsQueue);
+
+		createUniformBuffers();
+		createDescriptorPool();
+		createDescriptorSets();
 
 		createRenderPass();
 		createGraphicsPipeline();
@@ -132,9 +137,9 @@ private:
 		vkDestroySemaphore(device, imageAvailableSemaphore, nullptr);
 		vkDestroyFence(device, inFlightFence, nullptr);
 
-		m_TriangleMesh.DestroyMesh();
+		//m_TriangleMesh.DestroyMesh();
 		m_RectMesh.DestroyMesh();
-		m_OvalMesh.DestroyMesh();
+		//m_OvalMesh.DestroyMesh();
 
 		m_CommandPool.Destroy();
 
@@ -146,15 +151,13 @@ private:
 		vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
 		vkDestroyRenderPass(device, renderPass, nullptr);
 
-		for (size_t i = 0; i < 3; ++i)
-		{
-			uniformBuffers[i]->Destroy();
-		}
+		//for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; ++i)
+		//{
+		//	uniformBuffers[i]->Destroy();
+		//}
 
-		vkDestroyDescriptorSetLayout(device, descriptorSetLayout, nullptr);
-
-		vkDestroyDescriptorPool(device, descriptorPool, nullptr);
-		vkDestroyDescriptorSetLayout(device, descriptorSetLayout, nullptr);
+		//vkDestroyDescriptorPool(device, descriptorPool, nullptr);
+		//vkDestroyDescriptorSetLayout(device, descriptorSetLayout, nullptr);
 
 		for (auto imageView : swapChainImageViews) {
 			vkDestroyImageView(device, imageView, nullptr);
@@ -179,22 +182,24 @@ private:
 		}
 	}
 
+	int MAX_FRAMES_IN_FLIGHT = 1;
+	int CURRENT_FRAME = 0;
+
 	GP2_Shader m_GradientShader{ "shaders/shader.vert.spv", "shaders/shader.frag.spv" };
 
 	void createUniformBuffers()
 	{
 		VkDeviceSize bufferSize = sizeof(UniformBufferObject);
 
-		uniformBuffers.resize(3);
-		uniformBuffersMapped.resize(3);
+		uniformBuffers.resize(MAX_FRAMES_IN_FLIGHT);
+		uniformBuffersMapped.resize(MAX_FRAMES_IN_FLIGHT);
 
-		for (size_t i = 0; i < 3; ++i)
+		for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; ++i)
 		{
 			uniformBuffers[i] = new GP2_Buffer(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent }, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
 				VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
-			////// TODO add new function for persistent mapping
-			uniformBuffers[i]->MapMemory(&uniformBuffersMapped[i]);
+			uniformBuffers[i]->MapMemory(uniformBuffersMapped[i]);
 		}
 	}
 
@@ -202,13 +207,13 @@ private:
 	{
 		VkDescriptorPoolSize poolSize{};
 		poolSize.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-		poolSize.descriptorCount = static_cast<uint32_t>(3);
+		poolSize.descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
 
 		VkDescriptorPoolCreateInfo poolInfo{};
 		poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
 		poolInfo.poolSizeCount = 1;
 		poolInfo.pPoolSizes = &poolSize;
-		poolInfo.maxSets = static_cast<uint32_t>(3);
+		poolInfo.maxSets = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
 
 		if (vkCreateDescriptorPool(device, &poolInfo, nullptr, &descriptorPool) != VK_SUCCESS) {
 			throw std::runtime_error("failed to create descriptor pool!");
@@ -217,19 +222,19 @@ private:
 
 	void createDescriptorSets()
 	{
-		std::vector<VkDescriptorSetLayout> layouts(3, descriptorSetLayout);
+		std::vector<VkDescriptorSetLayout> layouts(MAX_FRAMES_IN_FLIGHT, descriptorSetLayout);
 		VkDescriptorSetAllocateInfo allocInfo{};
 		allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
 		allocInfo.descriptorPool = descriptorPool;
-		allocInfo.descriptorSetCount = static_cast<uint32_t>(3);
+		allocInfo.descriptorSetCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
 		allocInfo.pSetLayouts = layouts.data();
 
-		descriptorSets.resize(3);
+		descriptorSets.resize(MAX_FRAMES_IN_FLIGHT);
 		if (vkAllocateDescriptorSets(device, &allocInfo, descriptorSets.data()) != VK_SUCCESS) {
 			throw std::runtime_error("failed to allocate descriptor sets!");
 		}
 
-		for (size_t i = 0; i < 3; ++i)
+		for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; ++i)
 		{
 			VkDescriptorBufferInfo bufferInfo{};
 			bufferInfo.buffer = uniformBuffers[i]->GetVkBuffer();
@@ -326,9 +331,9 @@ private:
 	VkPipeline graphicsPipeline;
 	VkRenderPass renderPass;
 
-	GP2_Mesh m_TriangleMesh;
+	//GP2_Mesh m_TriangleMesh;
 	GP2_Mesh m_RectMesh;
-	GP2_Mesh m_OvalMesh;
+	//GP2_Mesh m_OvalMesh;
 
 	void createFrameBuffers();
 	void createRenderPass();
