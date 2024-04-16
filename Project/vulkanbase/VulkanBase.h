@@ -133,9 +133,12 @@ private:
 	}
 
 	void cleanup() {
-		vkDestroySemaphore(device, renderFinishedSemaphore, nullptr);
-		vkDestroySemaphore(device, imageAvailableSemaphore, nullptr);
-		vkDestroyFence(device, inFlightFence, nullptr);
+		for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; ++i)
+		{
+			vkDestroySemaphore(device, renderFinishedSemaphores[i], nullptr);
+			vkDestroySemaphore(device, imageAvailableSemaphores[i], nullptr);
+			vkDestroyFence(device, inFlightFences[i], nullptr);
+		}
 
 		//m_TriangleMesh.DestroyMesh();
 		m_RectMesh.DestroyMesh();
@@ -151,14 +154,6 @@ private:
 		vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
 		vkDestroyRenderPass(device, renderPass, nullptr);
 
-		//for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; ++i)
-		//{
-		//	uniformBuffers[i]->Destroy();
-		//}
-
-		//vkDestroyDescriptorPool(device, descriptorPool, nullptr);
-		//vkDestroyDescriptorSetLayout(device, descriptorSetLayout, nullptr);
-
 		for (auto imageView : swapChainImageViews) {
 			vkDestroyImageView(device, imageView, nullptr);
 		}
@@ -167,6 +162,16 @@ private:
 			DestroyDebugUtilsMessengerEXT(instance, debugMessenger, nullptr);
 		}
 		vkDestroySwapchainKHR(device, swapChain, nullptr);
+
+		for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; ++i)
+		{
+			uniformBuffers[i]->Destroy();
+		}
+
+		vkDestroyDescriptorPool(device, descriptorPool, nullptr);
+
+		vkDestroyDescriptorSetLayout(device, descriptorSetLayout, nullptr);
+
 		vkDestroyDevice(device, nullptr);
 
 		vkDestroySurfaceKHR(instance, surface, nullptr);
@@ -182,7 +187,7 @@ private:
 		}
 	}
 
-	int MAX_FRAMES_IN_FLIGHT = 1;
+	const int MAX_FRAMES_IN_FLIGHT = 1;
 	int CURRENT_FRAME = 0;
 
 	GP2_Shader m_GradientShader{ "shaders/shader.vert.spv", "shaders/shader.frag.spv" };
@@ -375,9 +380,9 @@ private:
 	VkDevice device = VK_NULL_HANDLE;
 	VkSurfaceKHR surface;
 
-	VkSemaphore imageAvailableSemaphore;
-	VkSemaphore renderFinishedSemaphore;
-	VkFence inFlightFence;
+	std::vector<VkSemaphore> imageAvailableSemaphores;
+	std::vector <VkSemaphore> renderFinishedSemaphores;
+	std::vector <VkFence> inFlightFences;
 
 	void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);
 	void setupDebugMessenger();
