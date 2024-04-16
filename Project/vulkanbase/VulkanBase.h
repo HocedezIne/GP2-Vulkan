@@ -199,6 +199,9 @@ private:
 	void createRenderPass();
 	void createGraphicsPipeline();
 
+	void beginRenderPass(const GP2_CommandBuffer& cmdBuffer, VkFramebuffer currentBuffer, VkExtent2D extent);
+	void endRenderPass(const GP2_CommandBuffer& cmdBuffer);
+
 	// Week 04
 	// Swap chain and image view support
 

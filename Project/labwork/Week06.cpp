@@ -1,5 +1,9 @@
 #include "vulkanbase/VulkanBase.h"
 
+#include <glm/gtc/matrix_transform.hpp>
+
+#include "GP2_Vertex.h"
+
 void VulkanBase::populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo) {
 	createInfo = {};
 	createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
@@ -36,6 +40,27 @@ void VulkanBase::createSyncObjects() {
 
 }
 
+void VulkanBase::beginRenderPass(const GP2_CommandBuffer& cmdBuffer, VkFramebuffer currentBuffer, VkExtent2D extent)
+{
+	VkRenderPassBeginInfo renderPassInfo{};
+	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+	renderPassInfo.renderPass = renderPass;
+	renderPassInfo.framebuffer = currentBuffer;
+	renderPassInfo.renderArea.offset = { 0, 0 };
+	renderPassInfo.renderArea.extent = extent;
+
+	VkClearValue clearColor = { {{0.0f, 0.0f, 0.0f, 1.0f}} };
+	renderPassInfo.clearValueCount = 1;
+	renderPassInfo.pClearValues = &clearColor;
+
+	vkCmdBeginRenderPass(cmdBuffer.GetVkCommandBuffer(), &renderPassInfo,VK_SUBPASS_CONTENTS_INLINE);
+}
+
+void VulkanBase::endRenderPass(const GP2_CommandBuffer& cmdBuffer)
+{
+	vkCmdEndRenderPass(cmdBuffer.GetVkCommandBuffer());
+}
+
 void VulkanBase::drawFrame() {
 	vkWaitForFences(device, 1, &inFlightFence, VK_TRUE, UINT64_MAX);
 	vkResetFences(device, 1, &inFlightFence);
@@ -45,7 +70,24 @@ void VulkanBase::drawFrame() {
 
 	m_CommandBuffer.Reset();
 	m_CommandBuffer.BeginRecording();
-	drawFrame(imageIndex);
+
+	beginRenderPass(m_CommandBuffer, swapChainFramebuffers[imageIndex], swapChainExtent);
+
+	// 2d camera matrix
+	GP2_ViewProjection vp{};
+	glm::vec3 scaleFactors(1 / 400.0f, 1 / 300.0f, 1.0f);
+	vp.view = glm::scale(glm::mat4(1.0f), scaleFactors);
+	vp.view = glm::translate(vp.view, glm::vec3(-1, -1, 0));
+
+	// draw 2d graphics pipeline
+
+	// 3d camera matrix
+
+	// draw 3d graphics pipeline
+
+	endRenderPass(m_CommandBuffer);
+
+	//drawFrame(imageIndex);
 	m_CommandBuffer.EndRecording();
 
 	VkSubmitInfo submitInfo{};
