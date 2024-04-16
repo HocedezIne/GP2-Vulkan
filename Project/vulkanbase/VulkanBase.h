@@ -21,7 +21,7 @@
 #include "GP2_Shader.h"
 #include "GP2_CommandPool.h"
 #include "GP2_Mesh.h"
-#include "GP2_UniformmBufferObject.h"
+#include "GP2_DescriptorPool.h"
 #include "GP2_Buffer.h"
 
 #include <glm/glm.hpp>
@@ -81,7 +81,8 @@ private:
 		
 		// week 03
 		m_GradientShader.Initialize(device);
-		createDescriptorSetLayout();
+
+		m_DescriptorPool = new GP2_DescriptorPool{ device, MAX_FRAMES_IN_FLIGHT };
 
 		/*m_TriangleMesh.AddVertex({ 0.f, -0.5f, 0.f }, { 1.f, 1.f, 1.f });
 		m_TriangleMesh.AddVertex({ 0.5f, 0.5f, 0.f }, { 0.f, 1.f, 0.f });
@@ -111,9 +112,7 @@ private:
 		//m_OvalMesh.AddIndex({ 1,6,0,2,6,1,3,6,2,4,6,3,5,6,4,0,6,5 });
 		//m_OvalMesh.Initialize(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent }, m_CommandBuffer, findQueueFamilies(physicalDevice), graphicsQueue);
 
-		createUniformBuffers();
-		createDescriptorPool();
-		createDescriptorSets();
+		m_DescriptorPool->Initialize(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent });
 
 		createRenderPass();
 		createGraphicsPipeline();
@@ -122,9 +121,6 @@ private:
 		// week 06
 		createSyncObjects();
 	}
-
-	// ugly hack
-	bool m_SyncObjectsCreated{ false };
 
 	void mainLoop() {
 		while (!glfwWindowShouldClose(window)) {
@@ -166,14 +162,7 @@ private:
 		}
 		vkDestroySwapchainKHR(device, swapChain, nullptr);
 
-		for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; ++i)
-		{
-			uniformBuffers[i]->Destroy();
-		}
-
-		vkDestroyDescriptorPool(device, descriptorPool, nullptr);
-
-		vkDestroyDescriptorSetLayout(device, descriptorSetLayout, nullptr);
+		delete m_DescriptorPool;
 
 		vkDestroyDevice(device, nullptr);
 
@@ -190,100 +179,11 @@ private:
 		}
 	}
 
-	const int MAX_FRAMES_IN_FLIGHT = 1;
-	int CURRENT_FRAME = 0;
+	const size_t MAX_FRAMES_IN_FLIGHT = 1;
+	const int CURRENT_FRAME = 0;
 
 	GP2_Shader m_GradientShader{ "shaders/shader.vert.spv", "shaders/shader.frag.spv" };
-
-	void createUniformBuffers()
-	{
-		VkDeviceSize bufferSize = sizeof(UniformBufferObject);
-
-		uniformBuffers.resize(MAX_FRAMES_IN_FLIGHT);
-		uniformBuffersMapped.resize(MAX_FRAMES_IN_FLIGHT);
-
-		for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; ++i)
-		{
-			uniformBuffers[i] = new GP2_Buffer(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent }, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
-				VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-
-			uniformBuffers[i]->MapMemory(&uniformBuffersMapped[i]);
-		}
-	}
-
-	void createDescriptorPool()
-	{
-		VkDescriptorPoolSize poolSize{};
-		poolSize.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-		poolSize.descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
-
-		VkDescriptorPoolCreateInfo poolInfo{};
-		poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-		poolInfo.poolSizeCount = 1;
-		poolInfo.pPoolSizes = &poolSize;
-		poolInfo.maxSets = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
-
-		if (vkCreateDescriptorPool(device, &poolInfo, nullptr, &descriptorPool) != VK_SUCCESS) {
-			throw std::runtime_error("failed to create descriptor pool!");
-		}
-	}
-
-	void createDescriptorSets()
-	{
-		std::vector<VkDescriptorSetLayout> layouts(MAX_FRAMES_IN_FLIGHT, descriptorSetLayout);
-		VkDescriptorSetAllocateInfo allocInfo{};
-		allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-		allocInfo.descriptorPool = descriptorPool;
-		allocInfo.descriptorSetCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
-		allocInfo.pSetLayouts = layouts.data();
-
-		descriptorSets.resize(MAX_FRAMES_IN_FLIGHT);
-		if (vkAllocateDescriptorSets(device, &allocInfo, descriptorSets.data()) != VK_SUCCESS) {
-			throw std::runtime_error("failed to allocate descriptor sets!");
-		}
-
-		for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; ++i)
-		{
-			VkDescriptorBufferInfo bufferInfo{};
-			bufferInfo.buffer = uniformBuffers[i]->GetVkBuffer();
-			bufferInfo.offset = 0;
-			bufferInfo.range = sizeof(UniformBufferObject);
-
-			VkWriteDescriptorSet descriptorWrite{};
-			descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-			descriptorWrite.dstSet = descriptorSets[i];
-			descriptorWrite.dstBinding = 0;
-			descriptorWrite.dstArrayElement = 0;
-			descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-			descriptorWrite.descriptorCount = 1;
-			descriptorWrite.pBufferInfo = &bufferInfo;
-			descriptorWrite.pImageInfo = nullptr;
-			descriptorWrite.pTexelBufferView = nullptr;
-
-			vkUpdateDescriptorSets(device, 1, &descriptorWrite, 0, nullptr);
-		}
-	}
-
-	void createDescriptorSetLayout() {
-		VkDescriptorSetLayoutBinding uboLayoutBinding{};
-		uboLayoutBinding.binding = 0;
-		uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-		uboLayoutBinding.descriptorCount = 1;
-
-		uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-
-		uboLayoutBinding.pImmutableSamplers = nullptr;
-
-		VkDescriptorSetLayoutCreateInfo layoutInfo{};
-		layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-		layoutInfo.bindingCount = 1;
-		layoutInfo.pBindings = &uboLayoutBinding;
-
-		if (vkCreateDescriptorSetLayout(device, &layoutInfo, nullptr, &descriptorSetLayout) != VK_SUCCESS)
-		{
-			throw std::runtime_error("failed to create descriptor set layout");
-		}
-	}
+	GP2_DescriptorPool* m_DescriptorPool;
 
 	void updateUniformBuffer(uint32_t currentImage)
 	{
@@ -298,11 +198,8 @@ private:
 		ubo.proj = glm::perspective(glm::radians(45.f), swapChainExtent.width / (float)swapChainExtent.height, 0.1f, 10.f);
 		ubo.proj[1][1] *= -1;
 
-		memcpy(uniformBuffersMapped[currentImage], &ubo, sizeof(ubo)); // this gives errors for now
+		m_DescriptorPool->SetUBO(ubo, currentImage);
 	}
-
-	std::vector<GP2_Buffer*> uniformBuffers;
-	std::vector<void*> uniformBuffersMapped;
 
 	// Week 01: 
 	// Actual window
@@ -329,11 +226,6 @@ private:
 	// Week 03
 	// Renderpass concept
 	// Graphics pipeline
-	VkDescriptorSetLayout descriptorSetLayout;
-	
-	VkDescriptorPool descriptorPool;
-	std::vector<VkDescriptorSet> descriptorSets;
-
 	std::vector<VkFramebuffer> swapChainFramebuffers;
 	VkPipelineLayout pipelineLayout;
 	VkPipeline graphicsPipeline;
