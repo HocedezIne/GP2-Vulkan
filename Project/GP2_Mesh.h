@@ -14,10 +14,10 @@ public:
 	GP2_Mesh() = default;
 	~GP2_Mesh() = default;
 
-	void Initialize(const VulkanContext& context, GP2_CommandBuffer cmdBuffer, QueueFamilyIndices queueFamInd, VkQueue graphicsQueue);
+	void Initialize(const VulkanContext& context, QueueFamilyIndices queueFamInd, VkQueue graphicsQueue);
 	void DestroyMesh();
 
-	void Draw();
+	void Draw(VkPipelineLayout pipelineLayout, VkCommandBuffer cmdBuffer);
 
 	void AddVertex(const glm::vec3& pos, const glm::vec3& color);
 	void AddVertex(std::vector<GP2_Vertex> vertices);
@@ -32,5 +32,4 @@ private:
 	std::vector<uint16_t> m_Indices{};
 
 	VkDevice m_VkDevice{ VK_NULL_HANDLE };
-	GP2_CommandBuffer m_CommandBuffer{};
 };

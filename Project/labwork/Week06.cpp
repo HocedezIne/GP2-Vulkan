@@ -80,10 +80,15 @@ void VulkanBase::drawFrame() {
 	vp.view = glm::translate(vp.view, glm::vec3(-1, -1, 0));
 
 	// draw 2d graphics pipeline
+	m_GP2D->SetUBO(vp, 0);
+	m_GP2D->Record(m_CommandBuffer, swapChainExtent);
 
 	// 3d camera matrix
 
 	// draw 3d graphics pipeline
+
+
+	drawFrame(imageIndex);
 
 	endRenderPass(m_CommandBuffer);
 

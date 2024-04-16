@@ -21,6 +21,7 @@
 #include "GP2_Shader.h"
 #include "GP2_CommandPool.h"
 #include "GP2_Mesh.h"
+#include "GP2_GraphicsPipeline2D.h"
 
 
 const std::vector<const char*> validationLayers = {
@@ -80,14 +81,14 @@ private:
 		m_TriangleMesh.AddVertex({ 0.5f, 0.5f, 0.f }, { 0.f, 1.f, 0.f });
 		m_TriangleMesh.AddVertex({ -0.5f, 0.5f, 0.f }, { 0.f, 0.f, 1.f });
 		m_TriangleMesh.AddIndex({ 2,1,0 });
-		m_TriangleMesh.Initialize(VulkanContext{device, physicalDevice, renderPass, swapChainExtent}, m_CommandBuffer, findQueueFamilies(physicalDevice), graphicsQueue);
+		m_TriangleMesh.Initialize(VulkanContext{device, physicalDevice, renderPass, swapChainExtent}, findQueueFamilies(physicalDevice), graphicsQueue);
 
 		m_RectMesh.AddVertex({ 0.25f, -0.5f, 0.f }, { 1.f, 0.5f, 1.f });
 		m_RectMesh.AddVertex({ 0.25f, -0.75f, 0.f }, { 1.f, 0.f, 0.f });
 		m_RectMesh.AddVertex({ 0.75f, -0.5f, 0.f }, { 1.f, 1.f, 0.f });
 		m_RectMesh.AddVertex({ 0.75f, -0.75f, 0.f }, { 1.f, 1.f, 1.f });
 		m_RectMesh.AddIndex({ 2,1,0,3,1,2 });
-		m_RectMesh.Initialize(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent }, m_CommandBuffer, findQueueFamilies(physicalDevice), graphicsQueue);
+		m_RectMesh.Initialize(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent }, findQueueFamilies(physicalDevice), graphicsQueue);
 
 		m_OvalMesh.AddVertex({ -0.625f, -0.625f, 0.f }, { 1.f, 1.f, 0.f }); // 0
 		m_OvalMesh.AddVertex({ -0.625f, -0.375f, 0.f }, { 0.f, 1.f, 0.f }); // 1
@@ -97,10 +98,9 @@ private:
 		m_OvalMesh.AddVertex({ -0.5f, -0.75f, 0.f }, { 1.f,0.f,0.f }); // 5
 		m_OvalMesh.AddVertex({ -0.5f, -0.5f, 0.f }, { 1.f,1.f,1.f }); // center, 6
 		m_OvalMesh.AddIndex({ 1,6,0,2,6,1,3,6,2,4,6,3,5,6,4,0,6,5 });
-		m_OvalMesh.Initialize(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent }, m_CommandBuffer, findQueueFamilies(physicalDevice), graphicsQueue);
+		m_OvalMesh.Initialize(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent }, findQueueFamilies(physicalDevice), graphicsQueue);
 
 		createRenderPass();
-		createGraphicsPipeline();
 		createFrameBuffers();
 
 		// week 06
@@ -131,8 +131,8 @@ private:
 			vkDestroyFramebuffer(device, framebuffer, nullptr);
 		}
 
-		vkDestroyPipeline(device, graphicsPipeline, nullptr);
-		vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
+		// TODO: destroy custom pipelines
+
 		vkDestroyRenderPass(device, renderPass, nullptr);
 
 		for (auto imageView : swapChainImageViews) {
@@ -187,8 +187,7 @@ private:
 	// Graphics pipeline
 	
 	std::vector<VkFramebuffer> swapChainFramebuffers;
-	VkPipelineLayout pipelineLayout;
-	VkPipeline graphicsPipeline;
+
 	VkRenderPass renderPass;
 
 	GP2_Mesh m_TriangleMesh;
@@ -197,7 +196,6 @@ private:
 
 	void createFrameBuffers();
 	void createRenderPass();
-	void createGraphicsPipeline();
 
 	void beginRenderPass(const GP2_CommandBuffer& cmdBuffer, VkFramebuffer currentBuffer, VkExtent2D extent);
 	void endRenderPass(const GP2_CommandBuffer& cmdBuffer);

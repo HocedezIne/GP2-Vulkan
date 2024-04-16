@@ -12,7 +12,7 @@ foreach(GLSL ${GLSL_SOURCE_FILES})
     set(SPIRV "${SHADER_BINARY_DIR}/${FILE_NAME}.spv")
     add_custom_command(
         OUTPUT ${SPIRV}
-        COMMAND ${Vulkan_GLSLC_EXECUTABLE} ${GLSL} -o ${SPIRV}
+        COMMAND ${Vulkan_GLSLC_EXECUTABLE} -g ${GLSL} -o ${SPIRV}
         DEPENDS ${GLSL}
     )
     list(APPEND SPIRV_BINARY_FILES ${SPIRV})
@@ -35,7 +35,7 @@ set(SOURCES
     "labwork/Week04.cpp" 
     "labwork/Week05.cpp"
     "labwork/Week06.cpp"
- "GP2_Vertex.h"  "GP2_Shader.h" "GP2_Shader.cpp" "GP2_CommandPool.h" "GP2_CommandPool.cpp" "CommandBuffer.h" "CommandBuffer.cpp" "GP2_Mesh.h" "GP2_Mesh.cpp" "GP2_Buffer.h" "GP2_Buffer.cpp")
+ "GP2_Vertex.h"  "GP2_Shader.h" "GP2_Shader.cpp" "GP2_CommandPool.h" "GP2_CommandPool.cpp" "CommandBuffer.h" "CommandBuffer.cpp" "GP2_Mesh.h" "GP2_Mesh.cpp" "GP2_Buffer.h" "GP2_Buffer.cpp" "GP2_GraphicsPipeline2D.h" "GP2_GraphicsPipeline2D.cpp")
 
 # Create the executable
 add_executable(${PROJECT_NAME} ${SOURCES} ${GLSL_SOURCE_FILES}  "vulkanbase/VulkanUtil.cpp" "labwork/Week03.cpp")
