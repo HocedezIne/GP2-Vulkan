@@ -207,7 +207,7 @@ private:
 			uniformBuffers[i] = new GP2_Buffer(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent }, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
 				VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
-			uniformBuffers[i]->MapMemory(uniformBuffersMapped[i]);
+			uniformBuffers[i]->MapMemory(&uniformBuffersMapped[i]);
 		}
 	}
 
@@ -298,7 +298,7 @@ private:
 		ubo.proj = glm::perspective(glm::radians(45.f), swapChainExtent.width / (float)swapChainExtent.height, 0.1f, 10.f);
 		ubo.proj[1][1] *= -1;
 
-		memcpy(&uniformBuffersMapped[currentImage], &ubo, sizeof(ubo)); // this gives errors for now
+		memcpy(uniformBuffersMapped[currentImage], &ubo, sizeof(ubo)); // this gives errors for now
 	}
 
 	std::vector<GP2_Buffer*> uniformBuffers;
