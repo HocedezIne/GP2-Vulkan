@@ -40,9 +40,15 @@ void VulkanBase::createSyncObjects() {
 			throw std::runtime_error("failed to create synchronization objects for a frame!");
 		}
 	}
+	m_SyncObjectsCreated = true;
 }
 
 void VulkanBase::drawFrame() {
+	// ulgy hack
+	if (!m_SyncObjectsCreated) {
+		createSyncObjects();
+	}
+
 	vkWaitForFences(device, 1, &inFlightFences[CURRENT_FRAME], VK_TRUE, UINT64_MAX);
 	vkResetFences(device, 1, &inFlightFences[CURRENT_FRAME]);
 

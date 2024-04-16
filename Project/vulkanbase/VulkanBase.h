@@ -123,10 +123,13 @@ private:
 		createSyncObjects();
 	}
 
+	// ugly hack
+	bool m_SyncObjectsCreated{ false };
+
 	void mainLoop() {
 		while (!glfwWindowShouldClose(window)) {
 			glfwPollEvents();
-			// week 06
+			//drawFrame week 06
 			drawFrame();
 		}
 		vkDeviceWaitIdle(device);
