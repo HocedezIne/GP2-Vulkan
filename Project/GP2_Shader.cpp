@@ -30,8 +30,6 @@ VkPipelineVertexInputStateCreateInfo GP2_Shader::CreateVertexInputStateInfo()
 	vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(m_AttributeDescription.size());
 	vertexInputInfo.pVertexBindingDescriptions = &m_BindingDescription;
 	vertexInputInfo.pVertexAttributeDescriptions = m_AttributeDescription.data();
-	//vertexInputInfo.vertexBindingDescriptionCount = 0;
-	//vertexInputInfo.vertexAttributeDescriptionCount = 0;
 	return vertexInputInfo;
 }
 
