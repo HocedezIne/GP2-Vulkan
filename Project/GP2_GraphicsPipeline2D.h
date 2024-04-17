@@ -6,6 +6,7 @@
 #include "CommandBuffer.h"
 #include "GP2_Mesh.h"
 #include "GP2_Shader.h"
+#include "GP2_DescriptorPool.h"
 
 class GP2_GraphicsPipeline2D
 {
@@ -13,11 +14,11 @@ public:
 	GP2_GraphicsPipeline2D(const std::string& vertexShaderFile, const std::string& fragmentShaderFile);
 	~GP2_GraphicsPipeline2D() = default;
 
-	void Initialize(const VulkanContext& context);
+	void Initialize(const VulkanContext& context, size_t descriptorPoolCount);
 
 	void CleanUp();
 
-	void Record(const GP2_CommandBuffer& cmdBuffer, VkExtent2D extent);
+	void Record(const GP2_CommandBuffer& cmdBuffer, VkExtent2D extent, int imageIndex);
 	void DrawScene(const GP2_CommandBuffer& cmdBuffer);
 
 	void AddMesh(std::unique_ptr<GP2_Mesh> mesh);
@@ -37,6 +38,8 @@ private:
 	VkRenderPass m_RenderPass{ VK_NULL_HANDLE };
 
 	GP2_Shader m_Shader;
+
+	GP2_DescriptorPool* m_DescriptorPool;
 
 	std::vector<std::unique_ptr<GP2_Mesh>> m_Meshes;
 };

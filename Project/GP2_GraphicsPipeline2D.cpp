@@ -6,7 +6,7 @@ GP2_GraphicsPipeline2D::GP2_GraphicsPipeline2D(const std::string& vertexShaderFi
 
 }
 
-void GP2_GraphicsPipeline2D::Initialize(const VulkanContext& context)
+void GP2_GraphicsPipeline2D::Initialize(const VulkanContext& context, size_t descriptorPoolCount)
 {
 	m_Device = context.device;
 	m_RenderPass = context.renderPass;
@@ -14,6 +14,8 @@ void GP2_GraphicsPipeline2D::Initialize(const VulkanContext& context)
 	m_Shader.Initialize(context.device);
 
 	// UBO
+	m_DescriptorPool = new GP2_DescriptorPool{ context.device, descriptorPoolCount };
+	m_DescriptorPool->Initialize(context);
 
 	CreateGraphicsPipeline();
 }
@@ -76,7 +78,8 @@ void GP2_GraphicsPipeline2D::CreateGraphicsPipeline()
 
 	VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
 	pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-	pipelineLayoutInfo.setLayoutCount = 0;
+	pipelineLayoutInfo.setLayoutCount = 1;
+	pipelineLayoutInfo.pSetLayouts = &m_DescriptorPool->GetDescriptorSetLayout();
 	pipelineLayoutInfo.pushConstantRangeCount = 1;
 	VkPushConstantRange pushConstantRange = CreatePushConstantRange();
 	pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange;
@@ -138,9 +141,11 @@ void GP2_GraphicsPipeline2D::CleanUp()
 
 	vkDestroyPipeline(m_Device, m_GraphicsPipeline, nullptr);
 	vkDestroyPipelineLayout(m_Device, m_PipelineLayout, nullptr);
+
+	delete m_DescriptorPool;
 }
 
-void GP2_GraphicsPipeline2D::Record(const GP2_CommandBuffer& cmdBuffer, VkExtent2D extent)
+void GP2_GraphicsPipeline2D::Record(const GP2_CommandBuffer& cmdBuffer, VkExtent2D extent, int imageIndex)
 {
 	vkCmdBindPipeline(cmdBuffer.GetVkCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, m_GraphicsPipeline);
 
@@ -158,10 +163,12 @@ void GP2_GraphicsPipeline2D::Record(const GP2_CommandBuffer& cmdBuffer, VkExtent
 	scissor.extent = extent;
 	vkCmdSetScissor(cmdBuffer.GetVkCommandBuffer(), 0, 1, &scissor);
 
+	m_DescriptorPool->BindDescriptorSet(cmdBuffer.GetVkCommandBuffer(), m_PipelineLayout, imageIndex);
+
 	DrawScene(cmdBuffer);
 }
 
 void GP2_GraphicsPipeline2D::SetUBO(GP2_ViewProjection ubo, size_t uboIndex)
 {
-	
+	//m_DescriptorPool->SetUBO(ubo, uboIndex);
 }

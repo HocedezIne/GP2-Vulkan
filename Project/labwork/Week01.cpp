@@ -6,9 +6,3 @@ void VulkanBase::initWindow() {
 	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 	window = glfwCreateWindow(WIDTH, HEIGHT, "Vulkan", nullptr, nullptr);
 }
-
-void VulkanBase::drawScene() {
-	//m_TriangleMesh.Draw();
-	//m_RectMesh.Draw();
-	//m_OvalMesh.Draw();
-}

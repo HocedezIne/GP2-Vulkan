@@ -87,7 +87,7 @@ void VulkanBase::drawFrame() {
 
 	// draw 2d graphics pipeline
 	m_GP2D.SetUBO(vp, 0);
-	m_GP2D.Record(m_CommandBuffer, swapChainExtent);
+	m_GP2D.Record(m_CommandBuffer, swapChainExtent, CURRENT_FRAME);
 
 	// 3d camera matrix
 

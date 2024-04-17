@@ -22,6 +22,8 @@
 #include "GP2_CommandPool.h"
 #include "GP2_Mesh.h"
 #include "GP2_GraphicsPipeline2D.h"
+#include "GP2_DescriptorPool.h"
+#include "GP2_UniformBufferObject.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -77,7 +79,7 @@ private:
 
 		m_CommandPool.Initialize(device, findQueueFamilies(physicalDevice));
 		m_CommandBuffer = m_CommandPool.CreateCommandBuffer();
-		
+
 		// week 03
 		std::unique_ptr<GP2_Mesh> m_TriangleMesh = std::make_unique<GP2_Mesh>();
 		m_TriangleMesh->AddVertex({ 0.f, -0.5f, 0.f }, { 1.f, 1.f, 1.f });
@@ -95,13 +97,6 @@ private:
 		m_RectMesh->AddIndex({ 2,1,0,3,1,2 });
 		m_RectMesh->Initialize(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent }, findQueueFamilies(physicalDevice), graphicsQueue);
 		m_GP2D.AddMesh(std::move(m_RectMesh));
-		m_DescriptorPool = new GP2_DescriptorPool{ device, MAX_FRAMES_IN_FLIGHT };
-
-		/*m_TriangleMesh.AddVertex({ 0.f, -0.5f, 0.f }, { 1.f, 1.f, 1.f });
-		m_TriangleMesh.AddVertex({ 0.5f, 0.5f, 0.f }, { 0.f, 1.f, 0.f });
-		m_TriangleMesh.AddVertex({ -0.5f, 0.5f, 0.f }, { 0.f, 0.f, 1.f });
-		m_TriangleMesh.AddIndex({ 2,1,0 });
-		m_TriangleMesh.Initialize(VulkanContext{device, physicalDevice, renderPass, swapChainExtent}, m_CommandBuffer, findQueueFamilies(physicalDevice), graphicsQueue);*/
 
 		std::unique_ptr<GP2_Mesh> m_OvalMesh = std::make_unique<GP2_Mesh>();
 		m_OvalMesh->AddVertex({ -0.625f, -0.625f, 0.f }, { 1.f, 1.f, 0.f }); // 0
@@ -116,7 +111,7 @@ private:
 		m_GP2D.AddMesh(std::move(m_OvalMesh));
 
 		createRenderPass();
-		m_GP2D.Initialize(VulkanContext{device, physicalDevice, renderPass, swapChainExtent});
+		m_GP2D.Initialize(VulkanContext{device, physicalDevice, renderPass, swapChainExtent}, MAX_FRAMES_IN_FLIGHT);
 		createFrameBuffers();
 
 		// week 06
@@ -159,8 +154,6 @@ private:
 		}
 		vkDestroySwapchainKHR(device, swapChain, nullptr);
 
-		delete m_DescriptorPool;
-
 		vkDestroyDevice(device, nullptr);
 
 		vkDestroySurfaceKHR(instance, surface, nullptr);
@@ -179,9 +172,6 @@ private:
 	const size_t MAX_FRAMES_IN_FLIGHT = 1;
 	const int CURRENT_FRAME = 0;
 
-	GP2_Shader m_GradientShader{ "shaders/shader.vert.spv", "shaders/shader.frag.spv" };
-	GP2_DescriptorPool* m_DescriptorPool;
-
 	void updateUniformBuffer(uint32_t currentImage)
 	{
 		static auto startTime = std::chrono::high_resolution_clock::now();
@@ -195,7 +185,7 @@ private:
 		ubo.proj = glm::perspective(glm::radians(45.f), swapChainExtent.width / (float)swapChainExtent.height, 0.1f, 10.f);
 		ubo.proj[1][1] *= -1;
 
-		m_DescriptorPool->SetUBO(ubo, currentImage);
+		//m_DescriptorPool->SetUBO(ubo, currentImage);
 	}
 
 	// Week 01: 

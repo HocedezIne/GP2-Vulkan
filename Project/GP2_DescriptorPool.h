@@ -3,7 +3,7 @@
 
 #include <vector>
 
-#include "GP2_UniformmBufferObject.h"
+#include "GP2_UniformBufferObject.h"
 #include "GP2_Buffer.h"
 
 class GP2_DescriptorPool
