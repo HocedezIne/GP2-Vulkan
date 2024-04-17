@@ -33,5 +33,5 @@ private:
 
 	VkDevice m_VkDevice{ VK_NULL_HANDLE };
 
-	GP2_MeshData m_VertexConstant;
+	GP2_MeshData m_VertexConstant{glm::mat4(1.f)};
 };
