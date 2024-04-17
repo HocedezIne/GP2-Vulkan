@@ -81,10 +81,10 @@ void VulkanBase::drawFrame() {
 	beginRenderPass(m_CommandBuffer, swapChainFramebuffers[imageIndex], swapChainExtent);
 
 	// 2d camera matrix
-	GP2_ViewProjection vp{};
-	glm::vec3 scaleFactors(1 / 400.0f, 1 / 300.0f, 1.0f);
+	GP2_ViewProjection vp{ glm::mat4(1.0f) ,glm::mat4(1.0f) };
+	glm::vec3 scaleFactors(1 / 1.0f, 1 / 1.0f, 1.0f);
 	vp.view = glm::scale(glm::mat4(1.0f), scaleFactors);
-	vp.view = glm::translate(vp.view, glm::vec3(-1, -1, 0));
+	vp.view = glm::translate(vp.view, glm::vec3(0, 0, 0));
 
 	// draw 2d graphics pipeline
 	m_GP2D.SetUBO(vp, 0);
