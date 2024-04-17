@@ -172,22 +172,6 @@ private:
 	const size_t MAX_FRAMES_IN_FLIGHT = 1;
 	const int CURRENT_FRAME = 0;
 
-	void updateUniformBuffer(uint32_t currentImage)
-	{
-		static auto startTime = std::chrono::high_resolution_clock::now();
-
-		auto currentTime = std::chrono::high_resolution_clock::now();
-		float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
-
-		UniformBufferObject ubo{};
-		ubo.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.f), glm::vec3(0.f, 0.f, 1.f));
-		ubo.view = glm::lookAt(glm::vec3(2.f, 2.f, 2.f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f, 0.f, 1.f));
-		ubo.proj = glm::perspective(glm::radians(45.f), swapChainExtent.width / (float)swapChainExtent.height, 0.1f, 10.f);
-		ubo.proj[1][1] *= -1;
-
-		//m_DescriptorPool->SetUBO(ubo, currentImage);
-	}
-
 	// Week 01: 
 	// Actual window
 	// simple fragment + vertex shader creation functions
@@ -217,7 +201,7 @@ private:
 
 	VkRenderPass renderPass;
 
-	GP2_GraphicsPipeline2D m_GP2D{ "shaders/shader.vert.spv", "shaders/shader.frag.spv" };
+	GP2_GraphicsPipeline2D<GP2_ViewProjection> m_GP2D{ "shaders/shader.vert.spv", "shaders/shader.frag.spv" };
 
 	void createFrameBuffers();
 	void createRenderPass();
