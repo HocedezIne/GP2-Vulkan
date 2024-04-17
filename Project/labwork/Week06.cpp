@@ -52,7 +52,33 @@ void VulkanBase::drawFrame() {
 	m_CommandBuffer.Reset();
 	m_CommandBuffer.BeginRecording();
 
-	drawFrame(imageIndex);
+	beginRenderPass(m_CommandBuffer, swapChainFramebuffers[imageIndex], swapChainExtent);
+
+	// 2d camera matrix
+	GP2_ViewProjection vp{ glm::mat4(1.0f) ,glm::mat4(1.0f) };
+	glm::vec3 scaleFactors(1 / 1.0f, 1 / 1.0f, 1.0f);
+	vp.view = glm::scale(glm::mat4(1.0f), scaleFactors);
+	vp.view = glm::translate(vp.view, glm::vec3(0, 0, 0));
+
+	// draw 2d graphics pipeline
+	m_GP2D.SetUBO(vp, 0);
+	m_GP2D.Record(m_CommandBuffer, swapChainExtent, CURRENT_FRAME);
+
+	// 3d camera matrix
+	static auto startTime = std::chrono::high_resolution_clock::now();
+	auto currentTime = std::chrono::high_resolution_clock::now();
+	float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
+	UniformBufferObject ubo{};
+	ubo.model = glm::mat4{1.f};
+	ubo.view = glm::lookAt(m_CameraPos, m_CameraForward, m_CameraUp);
+	ubo.proj = glm::perspective(glm::radians(m_FovAngle), m_AspectRatio, 0.1f, 10.f);
+
+	m_GP3D.SetUBO(ubo, 0);
+	m_GP3D.Record(m_CommandBuffer, swapChainExtent, CURRENT_FRAME);
+
+	endRenderPass(m_CommandBuffer);
+
+	//drawFrame(imageIndex);
 	m_CommandBuffer.EndRecording();
 
 	VkSubmitInfo submitInfo{};

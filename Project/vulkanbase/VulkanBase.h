@@ -62,6 +62,24 @@ public:
 	}
 
 private:
+	// camera stuff
+	void keyEvent(int key, int scancode, int action, int mods);
+	void mouseMove(GLFWwindow* window, double xpos, double ypos);
+	void mouseEvent(GLFWwindow* window, int button, int action, int mods);
+	glm::vec2 m_DragStart{ 0,0 };
+	float m_Rotation{};
+	float m_Radius{ 10.f };
+
+	glm::vec3 m_CameraPos{ 2.f,2.f,2.f };
+	glm::vec3 m_CameraForward{0.f, 0.f, 1.f};
+	glm::vec3 m_CameraRight{ 1.f, 0.f, 0.f };
+	const glm::vec3 m_CameraUp{ 0.f,1.f,0.f };
+	const float m_FovAngle{ 45.f };
+	const float m_AspectRatio{ swapChainExtent.width / (float)swapChainExtent.height };
+
+	glm::vec3 m_TargetPos{};
+	const glm::vec3 m_UpVector{};
+
 	void initVulkan() {
 		// week 06
 		createInstance();
@@ -233,10 +251,8 @@ private:
 	VkPipeline graphicsPipeline;
 	VkRenderPass renderPass;
 
-	//GP2_Mesh m_TriangleMesh;
-	GP2_Mesh m_RectMesh;
-	GP2_Mesh m_OvalMesh;
-	GP2_Mesh m_ParsedMesh;
+	GP2_GraphicsPipeline2D<GP2_ViewProjection> m_GP2D{ "shaders/shader.vert.spv", "shaders/shader.frag.spv" };
+	GP2_GraphicsPipeline3D<UniformBufferObject> m_GP3D{ "shaders/3Dshader.vert.spv", "shaders/3Dshader.frag.spv" };
 
 	void createFrameBuffers();
 	void createRenderPass();
