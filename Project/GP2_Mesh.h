@@ -32,4 +32,6 @@ private:
 	std::vector<uint16_t> m_Indices{};
 
 	VkDevice m_VkDevice{ VK_NULL_HANDLE };
+
+	GP2_MeshData m_VertexConstant;
 };

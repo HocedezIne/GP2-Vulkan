@@ -24,6 +24,8 @@ VkPushConstantRange GP2_GraphicsPipeline2D::CreatePushConstantRange()
 	pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
 	pushConstantRange.offset = 0;
 	pushConstantRange.size = sizeof(GP2_MeshData);
+
+	return pushConstantRange;
 }
 
 void GP2_GraphicsPipeline2D::CreateGraphicsPipeline()
@@ -123,12 +125,17 @@ void GP2_GraphicsPipeline2D::DrawScene(const GP2_CommandBuffer& cmdBuffer)
 
 	for (auto& mesh : m_Meshes)
 	{
-		//mesh->Draw(m_PipelineLayout, cmdBuffer.GetVkCommandBuffer());
+		mesh->Draw(m_PipelineLayout, cmdBuffer.GetVkCommandBuffer());
 	}
 }
 
 void GP2_GraphicsPipeline2D::CleanUp()
 {
+	for (auto& mesh : m_Meshes)
+	{
+		mesh->DestroyMesh();
+	}
+
 	vkDestroyPipeline(m_Device, m_GraphicsPipeline, nullptr);
 	vkDestroyPipelineLayout(m_Device, m_PipelineLayout, nullptr);
 }
@@ -136,4 +143,25 @@ void GP2_GraphicsPipeline2D::CleanUp()
 void GP2_GraphicsPipeline2D::Record(const GP2_CommandBuffer& cmdBuffer, VkExtent2D extent)
 {
 	vkCmdBindPipeline(cmdBuffer.GetVkCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, m_GraphicsPipeline);
+
+	VkViewport viewport{};
+	viewport.x = 0.0f;
+	viewport.y = 0.0f;
+	viewport.width = (float)extent.width;
+	viewport.height = (float)extent.height;
+	viewport.minDepth = 0.0f;
+	viewport.maxDepth = 1.0f;
+	vkCmdSetViewport(cmdBuffer.GetVkCommandBuffer(), 0, 1, &viewport);
+
+	VkRect2D scissor{};
+	scissor.offset = { 0, 0 };
+	scissor.extent = extent;
+	vkCmdSetScissor(cmdBuffer.GetVkCommandBuffer(), 0, 1, &scissor);
+
+	DrawScene(cmdBuffer);
+}
+
+void GP2_GraphicsPipeline2D::SetUBO(GP2_ViewProjection ubo, size_t uboIndex)
+{
+	
 }

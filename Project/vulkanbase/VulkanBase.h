@@ -75,32 +75,37 @@ private:
 		m_CommandBuffer = m_CommandPool.CreateCommandBuffer();
 		
 		// week 03
-		m_GradientShader.Initialize(device);
+		std::unique_ptr<GP2_Mesh> m_TriangleMesh = std::make_unique<GP2_Mesh>();
+		m_TriangleMesh->AddVertex({ 0.f, -0.5f, 0.f }, { 1.f, 1.f, 1.f });
+		m_TriangleMesh->AddVertex({ 0.5f, 0.5f, 0.f }, { 0.f, 1.f, 0.f });
+		m_TriangleMesh->AddVertex({ -0.5f, 0.5f, 0.f }, { 0.f, 0.f, 1.f });
+		m_TriangleMesh->AddIndex({ 2,1,0 });
+		m_TriangleMesh->Initialize(VulkanContext{device, physicalDevice, renderPass, swapChainExtent}, findQueueFamilies(physicalDevice), graphicsQueue);
+		m_GP2D.AddMesh(std::move(m_TriangleMesh));
 
-		m_TriangleMesh.AddVertex({ 0.f, -0.5f, 0.f }, { 1.f, 1.f, 1.f });
-		m_TriangleMesh.AddVertex({ 0.5f, 0.5f, 0.f }, { 0.f, 1.f, 0.f });
-		m_TriangleMesh.AddVertex({ -0.5f, 0.5f, 0.f }, { 0.f, 0.f, 1.f });
-		m_TriangleMesh.AddIndex({ 2,1,0 });
-		m_TriangleMesh.Initialize(VulkanContext{device, physicalDevice, renderPass, swapChainExtent}, findQueueFamilies(physicalDevice), graphicsQueue);
+		std::unique_ptr<GP2_Mesh> m_RectMesh = std::make_unique<GP2_Mesh>();
+		m_RectMesh->AddVertex({ 0.25f, -0.5f, 0.f }, { 1.f, 0.5f, 1.f });
+		m_RectMesh->AddVertex({ 0.25f, -0.75f, 0.f }, { 1.f, 0.f, 0.f });
+		m_RectMesh->AddVertex({ 0.75f, -0.5f, 0.f }, { 1.f, 1.f, 0.f });
+		m_RectMesh->AddVertex({ 0.75f, -0.75f, 0.f }, { 1.f, 1.f, 1.f });
+		m_RectMesh->AddIndex({ 2,1,0,3,1,2 });
+		m_RectMesh->Initialize(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent }, findQueueFamilies(physicalDevice), graphicsQueue);
+		m_GP2D.AddMesh(std::move(m_RectMesh));
 
-		m_RectMesh.AddVertex({ 0.25f, -0.5f, 0.f }, { 1.f, 0.5f, 1.f });
-		m_RectMesh.AddVertex({ 0.25f, -0.75f, 0.f }, { 1.f, 0.f, 0.f });
-		m_RectMesh.AddVertex({ 0.75f, -0.5f, 0.f }, { 1.f, 1.f, 0.f });
-		m_RectMesh.AddVertex({ 0.75f, -0.75f, 0.f }, { 1.f, 1.f, 1.f });
-		m_RectMesh.AddIndex({ 2,1,0,3,1,2 });
-		m_RectMesh.Initialize(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent }, findQueueFamilies(physicalDevice), graphicsQueue);
-
-		m_OvalMesh.AddVertex({ -0.625f, -0.625f, 0.f }, { 1.f, 1.f, 0.f }); // 0
-		m_OvalMesh.AddVertex({ -0.625f, -0.375f, 0.f }, { 0.f, 1.f, 0.f }); // 1
-		m_OvalMesh.AddVertex({ -0.5f, -0.25f, 0.f }, { 0.f, 1.f, 1.f }); // 2
-		m_OvalMesh.AddVertex({ -0.375f, -0.375f, 0.f }, { 0.f, 0.f, 1.f }); // 3
-		m_OvalMesh.AddVertex({ -0.375f, -0.625f, 0.f }, { 1.f, 0.f, 1.f }); // 4
-		m_OvalMesh.AddVertex({ -0.5f, -0.75f, 0.f }, { 1.f,0.f,0.f }); // 5
-		m_OvalMesh.AddVertex({ -0.5f, -0.5f, 0.f }, { 1.f,1.f,1.f }); // center, 6
-		m_OvalMesh.AddIndex({ 1,6,0,2,6,1,3,6,2,4,6,3,5,6,4,0,6,5 });
-		m_OvalMesh.Initialize(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent }, findQueueFamilies(physicalDevice), graphicsQueue);
+		std::unique_ptr<GP2_Mesh> m_OvalMesh = std::make_unique<GP2_Mesh>();
+		m_OvalMesh->AddVertex({ -0.625f, -0.625f, 0.f }, { 1.f, 1.f, 0.f }); // 0
+		m_OvalMesh->AddVertex({ -0.625f, -0.375f, 0.f }, { 0.f, 1.f, 0.f }); // 1
+		m_OvalMesh->AddVertex({ -0.5f, -0.25f, 0.f }, { 0.f, 1.f, 1.f }); // 2
+		m_OvalMesh->AddVertex({ -0.375f, -0.375f, 0.f }, { 0.f, 0.f, 1.f }); // 3
+		m_OvalMesh->AddVertex({ -0.375f, -0.625f, 0.f }, { 1.f, 0.f, 1.f }); // 4
+		m_OvalMesh->AddVertex({ -0.5f, -0.75f, 0.f }, { 1.f,0.f,0.f }); // 5
+		m_OvalMesh->AddVertex({ -0.5f, -0.5f, 0.f }, { 1.f,1.f,1.f }); // center, 6
+		m_OvalMesh->AddIndex({ 1,6,0,2,6,1,3,6,2,4,6,3,5,6,4,0,6,5 });
+		m_OvalMesh->Initialize(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent }, findQueueFamilies(physicalDevice), graphicsQueue);
+		m_GP2D.AddMesh(std::move(m_OvalMesh));
 
 		createRenderPass();
+		m_GP2D.Initialize(VulkanContext{device, physicalDevice, renderPass, swapChainExtent});
 		createFrameBuffers();
 
 		// week 06
@@ -121,17 +126,13 @@ private:
 		vkDestroySemaphore(device, imageAvailableSemaphore, nullptr);
 		vkDestroyFence(device, inFlightFence, nullptr);
 
-		m_TriangleMesh.DestroyMesh();
-		m_RectMesh.DestroyMesh();
-		m_OvalMesh.DestroyMesh();
-
 		m_CommandPool.Destroy();
 
 		for (auto framebuffer : swapChainFramebuffers) {
 			vkDestroyFramebuffer(device, framebuffer, nullptr);
 		}
 
-		// TODO: destroy custom pipelines
+		m_GP2D.CleanUp();
 
 		vkDestroyRenderPass(device, renderPass, nullptr);
 
@@ -157,8 +158,6 @@ private:
 			throw std::runtime_error("failed to create window surface!");
 		}
 	}
-
-	GP2_Shader m_GradientShader{ "shaders/shader.vert.spv", "shaders/shader.frag.spv" };
 
 	// Week 01: 
 	// Actual window
@@ -190,9 +189,7 @@ private:
 
 	VkRenderPass renderPass;
 
-	GP2_Mesh m_TriangleMesh;
-	GP2_Mesh m_RectMesh;
-	GP2_Mesh m_OvalMesh;
+	GP2_GraphicsPipeline2D m_GP2D{ "shaders/shader.vert.spv", "shaders/shader.frag.spv" };
 
 	void createFrameBuffers();
 	void createRenderPass();

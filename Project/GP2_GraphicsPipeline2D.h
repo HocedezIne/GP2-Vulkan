@@ -15,9 +15,6 @@ public:
 
 	void Initialize(const VulkanContext& context);
 
-	VkPipelineVertexInputStateCreateInfo CreateVertexInputStateInfo();
-	VkPipelineInputAssemblyStateCreateInfo CreateInputAssemblyInfo();
-
 	void CleanUp();
 
 	void Record(const GP2_CommandBuffer& cmdBuffer, VkExtent2D extent);
