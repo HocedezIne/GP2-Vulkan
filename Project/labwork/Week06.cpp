@@ -1,5 +1,10 @@
 #include "vulkanbase/VulkanBase.h"
 
+#include <glm/gtc/matrix_transform.hpp>
+#include <chrono>
+
+#include "GP2_Vertex.h"
+
 void VulkanBase::populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo) {
 	createInfo = {};
 	createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
@@ -7,7 +12,6 @@ void VulkanBase::populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInf
 	createInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
 	createInfo.pfnUserCallback = debugCallback;
 }
-
 
 void VulkanBase::setupDebugMessenger() {
 	if (!enableValidationLayers) return;
@@ -42,6 +46,27 @@ void VulkanBase::createSyncObjects() {
 	}
 }
 
+void VulkanBase::beginRenderPass(const GP2_CommandBuffer& cmdBuffer, VkFramebuffer currentBuffer, VkExtent2D extent)
+{
+	VkRenderPassBeginInfo renderPassInfo{};
+	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+	renderPassInfo.renderPass = renderPass;
+	renderPassInfo.framebuffer = currentBuffer;
+	renderPassInfo.renderArea.offset = { 0, 0 };
+	renderPassInfo.renderArea.extent = extent;
+
+	VkClearValue clearColor = { {{0.0f, 0.0f, 0.0f, 1.0f}} };
+	renderPassInfo.clearValueCount = 1;
+	renderPassInfo.pClearValues = &clearColor;
+
+	vkCmdBeginRenderPass(cmdBuffer.GetVkCommandBuffer(), &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+}
+
+void VulkanBase::endRenderPass(const GP2_CommandBuffer& cmdBuffer)
+{
+	vkCmdEndRenderPass(cmdBuffer.GetVkCommandBuffer());
+}
+
 void VulkanBase::drawFrame() {
 	vkWaitForFences(device, 1, &inFlightFences[CURRENT_FRAME], VK_TRUE, UINT64_MAX);
 	vkResetFences(device, 1, &inFlightFences[CURRENT_FRAME]);
@@ -69,7 +94,7 @@ void VulkanBase::drawFrame() {
 	auto currentTime = std::chrono::high_resolution_clock::now();
 	float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
 	UniformBufferObject ubo{};
-	ubo.model = glm::mat4{1.f};
+	ubo.model = glm::mat4{ 1.f };
 	ubo.view = glm::lookAt(m_CameraPos, m_CameraForward, m_CameraUp);
 	ubo.proj = glm::perspective(glm::radians(m_FovAngle), m_AspectRatio, 0.1f, 10.f);
 
@@ -84,7 +109,7 @@ void VulkanBase::drawFrame() {
 	VkSubmitInfo submitInfo{};
 	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
-	VkSemaphore waitSemaphores[] = { imageAvailableSemaphores[CURRENT_FRAME]};
+	VkSemaphore waitSemaphores[] = { imageAvailableSemaphores[CURRENT_FRAME] };
 	VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
 	submitInfo.waitSemaphoreCount = 1;
 	submitInfo.pWaitSemaphores = waitSemaphores;
@@ -92,7 +117,7 @@ void VulkanBase::drawFrame() {
 
 	m_CommandBuffer.Submit(submitInfo);
 
-	VkSemaphore signalSemaphores[] = { renderFinishedSemaphores[CURRENT_FRAME]};
+	VkSemaphore signalSemaphores[] = { renderFinishedSemaphores[CURRENT_FRAME] };
 	submitInfo.signalSemaphoreCount = 1;
 	submitInfo.pSignalSemaphores = signalSemaphores;
 

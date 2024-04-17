@@ -17,7 +17,7 @@ public:
 	void Initialize(const VulkanContext& context, GP2_CommandBuffer cmdBuffer, QueueFamilyIndices queueFamInd, VkQueue graphicsQueue);
 	void DestroyMesh();
 
-	void Draw();
+	void Draw(VkPipelineLayout pipelineLayout, VkCommandBuffer cmdBuffer);
 
 	void AddVertex(const glm::vec3& pos, const glm::vec3& color);
 	void AddVertex(std::vector<GP2_Vertex> vertices);
@@ -27,12 +27,13 @@ public:
 	bool ParseOBJ(const std::string& filename, bool flipAxisAndWinding = true);
 
 private:	
-	GP2_Buffer* m_VertexBuffer;
-	GP2_Buffer* m_IndexBuffer;
+	GP2_Buffer* m_VertexBuffer{};
+	GP2_Buffer* m_IndexBuffer{};
 
 	std::vector<GP2_Vertex> m_Vertices{};
 	std::vector<uint16_t> m_Indices{};
 
 	VkDevice m_VkDevice{ VK_NULL_HANDLE };
-	GP2_CommandBuffer m_CommandBuffer{};
+
+	GP2_MeshData m_VertexConstant{ glm::mat4(1.f) };
 };
