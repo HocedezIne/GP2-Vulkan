@@ -110,19 +110,19 @@ private:
 		m_OvalMesh->Initialize(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent }, findQueueFamilies(physicalDevice), graphicsQueue);
 		m_GP2D.AddMesh(std::move(m_OvalMesh));
 
-		m_RectMesh = std::make_unique<GP2_Mesh>();
-		m_RectMesh->AddVertex({ 0.25f, -0.5f, 0.f }, { 1.f, 0.5f, 1.f });
-		m_RectMesh->AddVertex({ 0.25f, -0.75f, 0.f }, { 1.f, 0.f, 0.f });
-		m_RectMesh->AddVertex({ 0.75f, -0.5f, 0.f }, { 1.f, 1.f, 0.f });
-		m_RectMesh->AddVertex({ 0.75f, -0.75f, 0.f }, { 1.f, 1.f, 1.f });
-		m_RectMesh->AddIndex({ 2,1,0,3,1,2 });
-		m_RectMesh->Initialize(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent }, findQueueFamilies(physicalDevice), graphicsQueue);
-		m_GP3D.AddMesh(std::move(m_RectMesh));
+		//m_RectMesh = std::make_unique<GP2_Mesh>();
+		//m_RectMesh->AddVertex({ 0.25f, -0.5f, 0.f }, { 1.f, 0.5f, 1.f });
+		//m_RectMesh->AddVertex({ 0.25f, -0.75f, 0.f }, { 1.f, 0.f, 0.f });
+		//m_RectMesh->AddVertex({ 0.75f, -0.5f, 0.f }, { 1.f, 1.f, 0.f });
+		//m_RectMesh->AddVertex({ 0.75f, -0.75f, 0.f }, { 1.f, 1.f, 1.f });
+		//m_RectMesh->AddIndex({ 2,1,0,3,1,2 });
+		//m_RectMesh->Initialize(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent }, findQueueFamilies(physicalDevice), graphicsQueue);
+		//m_GP3D.AddMesh(std::move(m_RectMesh));
 
 		createRenderPass();
 
 		m_GP2D.Initialize(VulkanContext{device, physicalDevice, renderPass, swapChainExtent}, MAX_FRAMES_IN_FLIGHT);
-		m_GP3D.Initialize(VulkanContext{device, physicalDevice, renderPass, swapChainExtent}, MAX_FRAMES_IN_FLIGHT);
+		//m_GP3D.Initialize(VulkanContext{device, physicalDevice, renderPass, swapChainExtent}, MAX_FRAMES_IN_FLIGHT);
 
 		createFrameBuffers();
 
@@ -154,7 +154,7 @@ private:
 		}
 
 		m_GP2D.CleanUp();
-		m_GP3D.CleanUp();
+		//m_GP3D.CleanUp();
 
 		vkDestroyRenderPass(device, renderPass, nullptr);
 
@@ -215,7 +215,7 @@ private:
 	VkRenderPass renderPass;
 
 	GP2_GraphicsPipeline2D<GP2_ViewProjection> m_GP2D{ "shaders/shader.vert.spv", "shaders/shader.frag.spv" };
-	GP2_GraphicsPipeline2D<UniformBufferObject> m_GP3D{ "shaders/shader.vert.spv", "shaders/shader.frag.spv" };
+	//GP2_GraphicsPipeline2D<UniformBufferObject> m_GP3D{ "shaders/shader.vert.spv", "shaders/shader.frag.spv" };
 
 	void createFrameBuffers();
 	void createRenderPass();

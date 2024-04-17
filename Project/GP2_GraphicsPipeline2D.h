@@ -40,7 +40,7 @@ private:
 
 	GP2_Shader m_Shader;
 
-	GP2_DescriptorPool<UBO>* m_DescriptorPool{};
+	//GP2_DescriptorPool<UBO>* m_DescriptorPool{};
 
 	std::vector<std::unique_ptr<GP2_Mesh>> m_Meshes{};
 };
@@ -62,7 +62,7 @@ void GP2_GraphicsPipeline2D<UBO>::CleanUp()
 	vkDestroyPipeline(m_Device, m_GraphicsPipeline, nullptr);
 	vkDestroyPipelineLayout(m_Device, m_PipelineLayout, nullptr);
 
-	delete m_DescriptorPool;
+	//delete m_DescriptorPool;
 }
 
 template <class UBO>
@@ -73,8 +73,8 @@ void GP2_GraphicsPipeline2D<UBO>::Initialize(const VulkanContext& context, size_
 
 	m_Shader.Initialize(context.device);
 
-	m_DescriptorPool = new GP2_DescriptorPool<UBO>{ context.device, descriptorPoolCount };
-	m_DescriptorPool->Initialize(context);
+	//m_DescriptorPool = new GP2_DescriptorPool<UBO>{ context.device, descriptorPoolCount };
+	//m_DescriptorPool->Initialize(context);
 
 	CreateGraphicsPipeline();
 }
@@ -146,8 +146,8 @@ void GP2_GraphicsPipeline2D<UBO>::CreateGraphicsPipeline()
 
 	VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
 	pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-	pipelineLayoutInfo.setLayoutCount = 1;
-	pipelineLayoutInfo.pSetLayouts = &m_DescriptorPool->GetDescriptorSetLayout();
+	pipelineLayoutInfo.setLayoutCount = /*1*/0;
+	//pipelineLayoutInfo.pSetLayouts = &m_DescriptorPool->GetDescriptorSetLayout();
 	pipelineLayoutInfo.pushConstantRangeCount = 1;
 	VkPushConstantRange pushConstantRange = CreatePushConstantRange();
 	pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange;
@@ -213,7 +213,7 @@ void GP2_GraphicsPipeline2D<UBO>::Record(const GP2_CommandBuffer& cmdBuffer, VkE
 	scissor.extent = extent;
 	vkCmdSetScissor(cmdBuffer.GetVkCommandBuffer(), 0, 1, &scissor);
 
-	m_DescriptorPool->BindDescriptorSet(cmdBuffer.GetVkCommandBuffer(), m_PipelineLayout, imageIndex);
+	//m_DescriptorPool->BindDescriptorSet(cmdBuffer.GetVkCommandBuffer(), m_PipelineLayout, imageIndex);
 
 	DrawScene(cmdBuffer);
 }
@@ -221,5 +221,5 @@ void GP2_GraphicsPipeline2D<UBO>::Record(const GP2_CommandBuffer& cmdBuffer, VkE
 template <class UBO>
 void GP2_GraphicsPipeline2D<UBO>::SetUBO(UBO ubo, size_t uboIndex)
 {
-	m_DescriptorPool->SetUBO(ubo, uboIndex);
+	//m_DescriptorPool->SetUBO(ubo, uboIndex);
 }
