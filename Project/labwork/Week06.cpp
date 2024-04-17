@@ -90,9 +90,14 @@ void VulkanBase::drawFrame() {
 	m_GP2D.Record(m_CommandBuffer, swapChainExtent, CURRENT_FRAME);
 
 	// 3d camera matrix
+	UniformBufferObject ubo{};
+	ubo.model = glm::rotate(glm::mat4(1.0f), glm::radians(90.f), glm::vec3(0.f, 0.f, 1.f));
+	ubo.view = glm::lookAt(glm::vec3(2.f,2.f,2.f), glm::vec3(0.f,0.f,0.f), glm::vec3(0.f,0.f, 1.f));
+	ubo.proj = glm::perspective(glm::radians(45.f), swapChainExtent.width/(float)swapChainExtent.height, 0.1f, 10.f);
+	ubo.proj[1][1] *= -1;
 
-	// draw 3d graphics pipeline
-
+	m_GP3D.SetUBO(ubo, 0);
+	m_GP3D.Record(m_CommandBuffer, swapChainExtent, CURRENT_FRAME);
 
 	endRenderPass(m_CommandBuffer);
 
