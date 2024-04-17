@@ -187,14 +187,9 @@ private:
 
 	// Week 01: 
 	// Actual window
-	// simple fragment + vertex shader creation functions
-	// These 5 functions should be refactored into a separate C++ class
-	// with the correct internal state.
 
 	GLFWwindow* window;
 	void initWindow();
-
-	void drawScene();
 
 	// Week 02
 	// Queue families
@@ -204,8 +199,6 @@ private:
 	GP2_CommandBuffer m_CommandBuffer;
 
 	QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
-
-	void drawFrame(uint32_t imageIndex);
 	
 	// Week 03
 	// Renderpass concept
@@ -215,7 +208,7 @@ private:
 	VkRenderPass renderPass;
 
 	GP2_GraphicsPipeline2D<GP2_ViewProjection> m_GP2D{ "shaders/shader.vert.spv", "shaders/shader.frag.spv" };
-	GP2_GraphicsPipeline3D<UniformBufferObject> m_GP3D{ "shaders/3Dshader.vert.spv", "shaders/3Dshader.frag.spv" };
+	GP2_GraphicsPipeline3D<GP2_ViewProjection> m_GP3D{ "shaders/3Dshader.vert.spv", "shaders/3Dshader.frag.spv" };
 
 	void createFrameBuffers();
 	void createRenderPass();

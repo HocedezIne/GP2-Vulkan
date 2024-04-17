@@ -94,12 +94,12 @@ void VulkanBase::drawFrame() {
 	static auto startTime = std::chrono::high_resolution_clock::now();
 	auto currentTime = std::chrono::high_resolution_clock::now();
 	float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
-	UniformBufferObject ubo{};
-	ubo.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.f), glm::vec3(0.f, 0.f, 1.f));
-	ubo.view = glm::lookAt(glm::vec3(2.f,2.f,2.f), glm::vec3(0.f,0.f,0.f), glm::vec3(0.f,0.f, 1.f));
-	ubo.proj = glm::perspective(glm::radians(45.f), swapChainExtent.width/(float)swapChainExtent.height, 0.1f, 10.f);
 
-	m_GP3D.SetUBO(ubo, 0);
+	//ubo.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.f), glm::vec3(0.f, 0.f, 1.f));
+	vp.view = glm::lookAt(glm::vec3(2.f,2.f,2.f), glm::vec3(0.f,0.f,0.f), glm::vec3(0.f,0.f, 1.f));
+	vp.proj = glm::perspective(glm::radians(45.f), swapChainExtent.width/(float)swapChainExtent.height, 0.1f, 10.f);
+
+	m_GP3D.SetUBO(vp, 0);
 	m_GP3D.Record(m_CommandBuffer, swapChainExtent, CURRENT_FRAME);
 
 	endRenderPass(m_CommandBuffer);
