@@ -14,7 +14,8 @@ public:
 
 	void Destroy();
 
-	void MapMemory(void* data);
+	void UploadMemoryData(void* data);
+	void MapMemory(void** data);
 	void CopyData(QueueFamilyIndices queueFamInd, GP2_Buffer sourceBuffer, VkQueue graphicsQueue);
 
 	void BindAsVertexBuffer(VkCommandBuffer cmdBuffer);
