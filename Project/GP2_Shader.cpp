@@ -44,7 +44,7 @@ VkPipelineInputAssemblyStateCreateInfo GP2_Shader::CreateInputAssemblyStateInfo(
 
 VkPipelineShaderStageCreateInfo GP2_Shader::CreateFragmentShaderInfo()
 {
-	std::vector<char> fragShaderCode = readFile(m_FragmentShaderFile); //"shaders/shader.frag.spv"
+	std::vector<char> fragShaderCode = readFile(m_FragmentShaderFile);
 	VkShaderModule fragShaderModule = CreateShaderModule(fragShaderCode);
 
 	VkPipelineShaderStageCreateInfo fragShaderStageInfo{};
@@ -58,7 +58,7 @@ VkPipelineShaderStageCreateInfo GP2_Shader::CreateFragmentShaderInfo()
 
 VkPipelineShaderStageCreateInfo GP2_Shader::CreateVertexShaderInfo()
 {
-	std::vector<char> vertShaderCode = readFile(m_VertexShaderFile); //"shaders/shader.vert.spv"
+	std::vector<char> vertShaderCode = readFile(m_VertexShaderFile);
 	VkShaderModule vertShaderModule = CreateShaderModule(vertShaderCode);
 
 	VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
