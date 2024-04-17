@@ -1,5 +1,4 @@
 #pragma once
-#include "vulkan/vulkan_core.h"
 
 #include <vulkanbase/VulkanUtil.h>
 
@@ -9,11 +8,11 @@
 #include "GP2_DescriptorPool.h"
 
 template <class UBO>
-class GP2_GraphicsPipeline2D
+class GP2_GraphicsPipeline3D
 {
 public:
-	GP2_GraphicsPipeline2D(const std::string& vertexShaderFile, const std::string& fragmentShaderFile);
-	~GP2_GraphicsPipeline2D() = default;
+	GP2_GraphicsPipeline3D(const std::string& vertexShaderFile, const std::string& fragmentShaderFile);
+	~GP2_GraphicsPipeline3D() = default;
 
 	void Initialize(const VulkanContext& context, size_t descriptorPoolCount);
 
@@ -33,7 +32,7 @@ private:
 
 	VkDevice m_Device{ VK_NULL_HANDLE };
 
-	VkPipeline m_GraphicsPipeline{VK_NULL_HANDLE};
+	VkPipeline m_GraphicsPipeline{ VK_NULL_HANDLE };
 	VkPipelineLayout m_PipelineLayout{ VK_NULL_HANDLE };
 
 	VkRenderPass m_RenderPass{ VK_NULL_HANDLE };
@@ -46,13 +45,13 @@ private:
 };
 
 template <class UBO>
-void GP2_GraphicsPipeline2D<UBO>::AddMesh(std::unique_ptr<GP2_Mesh> mesh)
+void GP2_GraphicsPipeline3D<UBO>::AddMesh(std::unique_ptr<GP2_Mesh> mesh)
 {
 	m_Meshes.push_back(std::move(mesh));
 }
 
 template <class UBO>
-void GP2_GraphicsPipeline2D<UBO>::CleanUp()
+void GP2_GraphicsPipeline3D<UBO>::CleanUp()
 {
 	for (auto& mesh : m_Meshes)
 	{
@@ -66,7 +65,7 @@ void GP2_GraphicsPipeline2D<UBO>::CleanUp()
 }
 
 template <class UBO>
-void GP2_GraphicsPipeline2D<UBO>::Initialize(const VulkanContext& context, size_t descriptorPoolCount)
+void GP2_GraphicsPipeline3D<UBO>::Initialize(const VulkanContext& context, size_t descriptorPoolCount)
 {
 	m_Device = context.device;
 	m_RenderPass = context.renderPass;
@@ -80,14 +79,14 @@ void GP2_GraphicsPipeline2D<UBO>::Initialize(const VulkanContext& context, size_
 }
 
 template <class UBO>
-GP2_GraphicsPipeline2D<UBO>::GP2_GraphicsPipeline2D(const std::string& vertexShaderFile, const std::string& fragmentShaderFile) :
+GP2_GraphicsPipeline3D<UBO>::GP2_GraphicsPipeline3D(const std::string& vertexShaderFile, const std::string& fragmentShaderFile) :
 	m_Shader{ vertexShaderFile, fragmentShaderFile }
 {
 
 }
 
 template <class UBO>
-VkPushConstantRange GP2_GraphicsPipeline2D<UBO>::CreatePushConstantRange()
+VkPushConstantRange GP2_GraphicsPipeline3D<UBO>::CreatePushConstantRange()
 {
 	VkPushConstantRange pushConstantRange{};
 	pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
@@ -98,7 +97,7 @@ VkPushConstantRange GP2_GraphicsPipeline2D<UBO>::CreatePushConstantRange()
 }
 
 template <class UBO>
-void GP2_GraphicsPipeline2D<UBO>::CreateGraphicsPipeline()
+void GP2_GraphicsPipeline3D<UBO>::CreateGraphicsPipeline()
 {
 	VkPipelineViewportStateCreateInfo viewportState{};
 	viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
@@ -186,7 +185,7 @@ void GP2_GraphicsPipeline2D<UBO>::CreateGraphicsPipeline()
 }
 
 template <class UBO>
-void GP2_GraphicsPipeline2D<UBO>::DrawScene(const GP2_CommandBuffer& cmdBuffer)
+void GP2_GraphicsPipeline3D<UBO>::DrawScene(const GP2_CommandBuffer& cmdBuffer)
 {
 	for (auto& mesh : m_Meshes)
 	{
@@ -195,7 +194,7 @@ void GP2_GraphicsPipeline2D<UBO>::DrawScene(const GP2_CommandBuffer& cmdBuffer)
 }
 
 template <class UBO>
-void GP2_GraphicsPipeline2D<UBO>::Record(const GP2_CommandBuffer& cmdBuffer, VkExtent2D extent, int imageIndex)
+void GP2_GraphicsPipeline3D<UBO>::Record(const GP2_CommandBuffer& cmdBuffer, VkExtent2D extent, int imageIndex)
 {
 	vkCmdBindPipeline(cmdBuffer.GetVkCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, m_GraphicsPipeline);
 
@@ -219,7 +218,7 @@ void GP2_GraphicsPipeline2D<UBO>::Record(const GP2_CommandBuffer& cmdBuffer, VkE
 }
 
 template <class UBO>
-void GP2_GraphicsPipeline2D<UBO>::SetUBO(UBO ubo, size_t uboIndex)
+void GP2_GraphicsPipeline3D<UBO>::SetUBO(UBO ubo, size_t uboIndex)
 {
 	m_DescriptorPool->SetUBO(ubo, uboIndex);
 }
