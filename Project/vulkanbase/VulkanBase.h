@@ -72,8 +72,9 @@ private:
 	float m_Radius{ 10.f };
 
 	glm::vec3 m_CameraPos{ 2.f,2.f,2.f };
-	glm::vec3 m_CameraForward{0.f, 1.f, 0.f};
-	const glm::vec3 m_CameraUp{ 0.f,0.f,1.f };
+	glm::vec3 m_CameraForward{0.f, 0.f, 1.f};
+	glm::vec3 m_CameraRight{ 1.f, 0.f, 0.f };
+	const glm::vec3 m_CameraUp{ 0.f,1.f,0.f };
 	const float m_FovAngle{ 45.f };
 	const float m_AspectRatio{ swapChainExtent.width / (float)swapChainExtent.height };
 
@@ -225,7 +226,7 @@ private:
 	VkRenderPass renderPass;
 
 	GP2_GraphicsPipeline2D<GP2_ViewProjection> m_GP2D{ "shaders/shader.vert.spv", "shaders/shader.frag.spv" };
-	GP2_GraphicsPipeline3D<GP2_ViewProjection> m_GP3D{ "shaders/3Dshader.vert.spv", "shaders/3Dshader.frag.spv" };
+	GP2_GraphicsPipeline3D<UniformBufferObject> m_GP3D{ "shaders/3Dshader.vert.spv", "shaders/3Dshader.frag.spv" };
 
 	void createFrameBuffers();
 	void createRenderPass();

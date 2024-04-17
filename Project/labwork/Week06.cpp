@@ -91,10 +91,15 @@ void VulkanBase::drawFrame() {
 	m_GP2D.Record(m_CommandBuffer, swapChainExtent, CURRENT_FRAME);
 
 	// 3d camera matrix
-	vp.view = glm::lookAt(m_CameraPos, m_CameraForward, m_CameraUp);
-	vp.proj = glm::perspective(glm::radians(m_FovAngle), m_AspectRatio, 0.1f, 10.f);
+	static auto startTime = std::chrono::high_resolution_clock::now();
+	auto currentTime = std::chrono::high_resolution_clock::now();
+	float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
+	UniformBufferObject ubo{};
+	ubo.model = glm::mat4{1.f};
+	ubo.view = glm::lookAt(m_CameraPos, m_CameraForward, m_CameraUp);
+	ubo.proj = glm::perspective(glm::radians(m_FovAngle), m_AspectRatio, 0.1f, 10.f);
 
-	m_GP3D.SetUBO(vp, 0);
+	m_GP3D.SetUBO(ubo, 0);
 	m_GP3D.Record(m_CommandBuffer, swapChainExtent, CURRENT_FRAME);
 
 	endRenderPass(m_CommandBuffer);
