@@ -112,7 +112,8 @@ private:
 		//m_OvalMesh.AddIndex({ 1,6,0,2,6,1,3,6,2,4,6,3,5,6,4,0,6,5 });
 		//m_OvalMesh.Initialize(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent }, m_CommandBuffer, findQueueFamilies(physicalDevice), graphicsQueue);
 
-		m_DescriptorPool->Initialize(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent });
+		m_ParsedMesh.ParseOBJ("D:\\DAE\\sm4\\graphics prog2\\Resources\\simple_cube.obj", false);
+		m_ParsedMesh.Initialize(device, physicalDevice, m_CommandBuffer, findQueueFamilies(physicalDevice), graphicsQueue);
 
 		createRenderPass();
 		createGraphicsPipeline();
@@ -141,7 +142,8 @@ private:
 
 		//m_TriangleMesh.DestroyMesh();
 		m_RectMesh.DestroyMesh();
-		//m_OvalMesh.DestroyMesh();
+		m_OvalMesh.DestroyMesh();
+		m_ParsedMesh.DestroyMesh();
 
 		m_CommandPool.Destroy();
 
@@ -233,7 +235,8 @@ private:
 
 	//GP2_Mesh m_TriangleMesh;
 	GP2_Mesh m_RectMesh;
-	//GP2_Mesh m_OvalMesh;
+	GP2_Mesh m_OvalMesh;
+	GP2_Mesh m_ParsedMesh;
 
 	void createFrameBuffers();
 	void createRenderPass();

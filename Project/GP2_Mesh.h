@@ -24,6 +24,8 @@ public:
 	void AddIndex(uint16_t index);
 	void AddIndex(std::vector<uint16_t> indices);
 
+	bool ParseOBJ(const std::string& filename, bool flipAxisAndWinding = true);
+
 private:	
 	GP2_Buffer* m_VertexBuffer;
 	GP2_Buffer* m_IndexBuffer;
