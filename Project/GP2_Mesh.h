@@ -25,8 +25,8 @@ public:
 	void AddIndex(std::vector<uint16_t> indices);
 
 private:	
-	GP2_Buffer* m_VertexBuffer;
-	GP2_Buffer* m_IndexBuffer;
+	GP2_Buffer* m_VertexBuffer{};
+	GP2_Buffer* m_IndexBuffer{};
 
 	std::vector<GP2_Vertex> m_Vertices{};
 	std::vector<uint16_t> m_Indices{};
