@@ -34,12 +34,3 @@ struct GP2_Vertex {
 		return attributeDescriptions;
 	}
 };
-
-struct GP2_ViewProjection {
-	glm::mat4 proj;
-	glm::mat4 view;
-};
-
-struct GP2_MeshData {
-	glm::mat4 model;
-};

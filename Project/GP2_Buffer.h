@@ -10,7 +10,7 @@ class GP2_Buffer
 {
 public:
 	GP2_Buffer(const VulkanContext& context, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties);
-	~GP2_Buffer() = default;
+	~GP2_Buffer() /*{ Destroy(); }*/ = default;
 
 	void Destroy();
 

@@ -1,10 +1,5 @@
 #include "vulkanbase/VulkanBase.h"
 
-#include <glm/gtc/matrix_transform.hpp>
-#include <chrono>
-
-#include "GP2_Vertex.h"
-
 void VulkanBase::populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo) {
 	createInfo = {};
 	createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
@@ -47,27 +42,6 @@ void VulkanBase::createSyncObjects() {
 	}
 }
 
-void VulkanBase::beginRenderPass(const GP2_CommandBuffer& cmdBuffer, VkFramebuffer currentBuffer, VkExtent2D extent)
-{
-	VkRenderPassBeginInfo renderPassInfo{};
-	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-	renderPassInfo.renderPass = renderPass;
-	renderPassInfo.framebuffer = currentBuffer;
-	renderPassInfo.renderArea.offset = { 0, 0 };
-	renderPassInfo.renderArea.extent = extent;
-
-	VkClearValue clearColor = { {{0.0f, 0.0f, 0.0f, 1.0f}} };
-	renderPassInfo.clearValueCount = 1;
-	renderPassInfo.pClearValues = &clearColor;
-
-	vkCmdBeginRenderPass(cmdBuffer.GetVkCommandBuffer(), &renderPassInfo,VK_SUBPASS_CONTENTS_INLINE);
-}
-
-void VulkanBase::endRenderPass(const GP2_CommandBuffer& cmdBuffer)
-{
-	vkCmdEndRenderPass(cmdBuffer.GetVkCommandBuffer());
-}
-
 void VulkanBase::drawFrame() {
 	vkWaitForFences(device, 1, &inFlightFences[CURRENT_FRAME], VK_TRUE, UINT64_MAX);
 	vkResetFences(device, 1, &inFlightFences[CURRENT_FRAME]);
@@ -78,28 +52,7 @@ void VulkanBase::drawFrame() {
 	m_CommandBuffer.Reset();
 	m_CommandBuffer.BeginRecording();
 
-	beginRenderPass(m_CommandBuffer, swapChainFramebuffers[imageIndex], swapChainExtent);
-
-	// 2d camera matrix
-	GP2_ViewProjection vp{ glm::mat4(1.0f) ,glm::mat4(1.0f) };
-	glm::vec3 scaleFactors(1 / 1.0f, 1 / 1.0f, 1.0f);
-	vp.view = glm::scale(glm::mat4(1.0f), scaleFactors);
-	vp.view = glm::translate(vp.view, glm::vec3(0, 0, 0));
-
-	// draw 2d graphics pipeline
-	m_GP2D.SetUBO(vp, 0);
-	m_GP2D.Record(m_CommandBuffer, swapChainExtent, CURRENT_FRAME);
-
-	// 3d camera matrix
-	vp.view = glm::lookAt(m_CameraPos, m_CameraForward, m_CameraUp);
-	vp.proj = glm::perspective(glm::radians(m_FovAngle), m_AspectRatio, 0.1f, 10.f);
-
-	m_GP3D.SetUBO(vp, 0);
-	m_GP3D.Record(m_CommandBuffer, swapChainExtent, CURRENT_FRAME);
-
-	endRenderPass(m_CommandBuffer);
-
-	//drawFrame(imageIndex);
+	drawFrame(imageIndex);
 	m_CommandBuffer.EndRecording();
 
 	VkSubmitInfo submitInfo{};

@@ -3,9 +3,10 @@
 #include <vulkanbase/VulkanUtil.h>
 #include <vulkanbase/VulkanBase.h>
 
-void GP2_Mesh::Initialize(const VulkanContext& context, QueueFamilyIndices queueFamInd, VkQueue graphicsQueue)
+void GP2_Mesh::Initialize(const VulkanContext& context, GP2_CommandBuffer cmdBuffer, QueueFamilyIndices queueFamInd, VkQueue graphicsQueue)
 {
 	m_VkDevice = context.device;
+	m_CommandBuffer = cmdBuffer;
 
 	GP2_Buffer stagingVertexBuffer{context, sizeof(m_Vertices[0]) * m_Vertices.size(), VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT};
 	stagingVertexBuffer.UploadMemoryData(m_Vertices.data());
@@ -29,14 +30,13 @@ void GP2_Mesh::DestroyMesh()
 	delete m_IndexBuffer;
 }
 
-void GP2_Mesh::Draw(VkPipelineLayout pipelineLayout, VkCommandBuffer cmdBuffer)
+void GP2_Mesh::Draw()
 {
-	m_VertexBuffer->BindAsVertexBuffer(cmdBuffer);
-	m_IndexBuffer->BindAsIndexBuffer(cmdBuffer);
+	m_VertexBuffer->BindAsVertexBuffer(m_CommandBuffer.GetVkCommandBuffer());
+	m_IndexBuffer->BindAsIndexBuffer(m_CommandBuffer.GetVkCommandBuffer());
 
-	vkCmdPushConstants(cmdBuffer, pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(GP2_MeshData), &m_VertexConstant);
-
-	vkCmdDrawIndexed(cmdBuffer, static_cast<uint32_t>(m_Indices.size()), 1, 0, 0, 0);
+	//vkCmdDraw(m_CommandBuffer.GetVkCommandBuffer(), static_cast<uint32_t>(m_Vertices.size()), 1, 0, 0);
+	vkCmdDrawIndexed(m_CommandBuffer.GetVkCommandBuffer(), static_cast<uint32_t>(m_Indices.size()), 1, 0, 0, 0);
 }
 
 void GP2_Mesh::AddVertex(const glm::vec3& pos, const glm::vec3& color)
