@@ -69,7 +69,7 @@ private:
 	float m_Rotation{};
 	float m_Radius{ 10.f };
 
-	glm::vec3 m_CameraPos{ -5.f, 1.f, 0.f };
+	glm::vec3 m_CameraPos{ 0.f, 0.f, 0.f };
 	glm::vec3 m_CameraForward{1.f, 0.f, 0.f};
 	glm::vec3 m_CameraRight{ 0.f, 0.f, 1.f };
 	const glm::vec3 m_CameraUp{ 0.f,1.f,0.f };
@@ -97,48 +97,60 @@ private:
 		m_CommandBuffer = m_CommandPool.CreateCommandBuffer();
 		
 		// week 03
-		std::unique_ptr<GP2_Mesh> m_TriangleMesh = std::make_unique<GP2_Mesh>();
-		m_TriangleMesh->AddVertex({ 0.f, -0.5f, 0.f }, { 1.f, 1.f, 1.f });
-		m_TriangleMesh->AddVertex({ 0.5f, 0.5f, 0.f }, { 0.f, 1.f, 0.f });
-		m_TriangleMesh->AddVertex({ -0.5f, 0.5f, 0.f }, { 0.f, 0.f, 1.f });
-		m_TriangleMesh->AddIndex({ 2,1,0 });
-		m_TriangleMesh->Initialize(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent }, m_CommandBuffer, findQueueFamilies(physicalDevice), graphicsQueue);
-		m_GP2D.AddMesh(std::move(m_TriangleMesh));
+		//std::unique_ptr<GP2_Mesh> m_TriangleMesh = std::make_unique<GP2_Mesh>();
+		//m_TriangleMesh->AddVertex({ 0.f, -0.5f, 0.f }, { 1.f, 1.f, 1.f });
+		//m_TriangleMesh->AddVertex({ 0.5f, 0.5f, 0.f }, { 0.f, 1.f, 0.f });
+		//m_TriangleMesh->AddVertex({ -0.5f, 0.5f, 0.f }, { 0.f, 0.f, 1.f });
+		//m_TriangleMesh->AddIndex({ 2,1,0 });
+		//m_TriangleMesh->Initialize(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent }, m_CommandBuffer, findQueueFamilies(physicalDevice), graphicsQueue);
+		//m_GP2D.AddMesh(std::move(m_TriangleMesh));
+
+		//std::unique_ptr<GP2_Mesh> m_RectMesh = std::make_unique<GP2_Mesh>();
+		//m_RectMesh->AddVertex({ 0.25f, -0.5f, 0.f }, { 1.f, 0.5f, 1.f });
+		//m_RectMesh->AddVertex({ 0.25f, -0.75f, 0.f }, { 1.f, 0.f, 0.f });
+		//m_RectMesh->AddVertex({ 0.75f, -0.5f, 0.f }, { 1.f, 1.f, 0.f });
+		//m_RectMesh->AddVertex({ 0.75f, -0.75f, 0.f }, { 1.f, 1.f, 1.f });
+		//m_RectMesh->AddIndex({ 2,1,0,3,1,2 });
+		//m_RectMesh->Initialize(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent }, m_CommandBuffer, findQueueFamilies(physicalDevice), graphicsQueue);
+		//m_GP2D.AddMesh(std::move(m_RectMesh));
+
+		//std::unique_ptr<GP2_Mesh> m_OvalMesh = std::make_unique<GP2_Mesh>();
+		//m_OvalMesh->AddVertex({ -0.625f, -0.625f, 0.f }, { 1.f, 1.f, 0.f }); // 0
+		//m_OvalMesh->AddVertex({ -0.625f, -0.375f, 0.f }, { 0.f, 1.f, 0.f }); // 1
+		//m_OvalMesh->AddVertex({ -0.5f, -0.25f, 0.f }, { 0.f, 1.f, 1.f }); // 2
+		//m_OvalMesh->AddVertex({ -0.375f, -0.375f, 0.f }, { 0.f, 0.f, 1.f }); // 3
+		//m_OvalMesh->AddVertex({ -0.375f, -0.625f, 0.f }, { 1.f, 0.f, 1.f }); // 4
+		//m_OvalMesh->AddVertex({ -0.5f, -0.75f, 0.f }, { 1.f,0.f,0.f }); // 5
+		//m_OvalMesh->AddVertex({ -0.5f, -0.5f, 0.f }, { 1.f,1.f,1.f }); // center, 6
+		//m_OvalMesh->AddIndex({ 1,6,0,2,6,1,3,6,2,4,6,3,5,6,4,0,6,5 });
+		//m_OvalMesh->Initialize(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent }, m_CommandBuffer, findQueueFamilies(physicalDevice), graphicsQueue);
+		//m_GP2D.AddMesh(std::move(m_OvalMesh));
 
 		std::unique_ptr<GP2_Mesh> m_RectMesh = std::make_unique<GP2_Mesh>();
-		m_RectMesh->AddVertex({ 0.25f, -0.5f, 0.f }, { 1.f, 0.5f, 1.f });
-		m_RectMesh->AddVertex({ 0.25f, -0.75f, 0.f }, { 1.f, 0.f, 0.f });
-		m_RectMesh->AddVertex({ 0.75f, -0.5f, 0.f }, { 1.f, 1.f, 0.f });
-		m_RectMesh->AddVertex({ 0.75f, -0.75f, 0.f }, { 1.f, 1.f, 1.f });
-		m_RectMesh->AddIndex({ 2,1,0,3,1,2 });
+		m_RectMesh->AddVertex({ -0.5f, -0.5f, 0.f }, { 1.f, 0.5f, 1.f });
+		m_RectMesh->AddVertex({ 0.5f, -0.5f, 0.f }, { 1.f, 0.f, 0.f });
+		m_RectMesh->AddVertex({ 0.5f, 0.5f, 0.f }, { 1.f, 1.f, 0.f });
+		m_RectMesh->AddVertex({ -0.5f, 0.5f, 0.f }, { 1.f, 1.f, 1.f });
+		m_RectMesh->AddIndex({ 2,1,0,0,3,2 });
 		m_RectMesh->Initialize(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent }, m_CommandBuffer, findQueueFamilies(physicalDevice), graphicsQueue);
-		m_GP2D.AddMesh(std::move(m_RectMesh));
+		m_GP3D.AddMesh(std::move(m_RectMesh));
 
-		std::unique_ptr<GP2_Mesh> m_OvalMesh = std::make_unique<GP2_Mesh>();
-		m_OvalMesh->AddVertex({ -0.625f, -0.625f, 0.f }, { 1.f, 1.f, 0.f }); // 0
-		m_OvalMesh->AddVertex({ -0.625f, -0.375f, 0.f }, { 0.f, 1.f, 0.f }); // 1
-		m_OvalMesh->AddVertex({ -0.5f, -0.25f, 0.f }, { 0.f, 1.f, 1.f }); // 2
-		m_OvalMesh->AddVertex({ -0.375f, -0.375f, 0.f }, { 0.f, 0.f, 1.f }); // 3
-		m_OvalMesh->AddVertex({ -0.375f, -0.625f, 0.f }, { 1.f, 0.f, 1.f }); // 4
-		m_OvalMesh->AddVertex({ -0.5f, -0.75f, 0.f }, { 1.f,0.f,0.f }); // 5
-		m_OvalMesh->AddVertex({ -0.5f, -0.5f, 0.f }, { 1.f,1.f,1.f }); // center, 6
-		m_OvalMesh->AddIndex({ 1,6,0,2,6,1,3,6,2,4,6,3,5,6,4,0,6,5 });
-		m_OvalMesh->Initialize(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent }, m_CommandBuffer, findQueueFamilies(physicalDevice), graphicsQueue);
-		m_GP2D.AddMesh(std::move(m_OvalMesh));
+		m_RectMesh = std::make_unique<GP2_Mesh>();
+		m_RectMesh->AddVertex({ -0.5f, -0.5f, -0.5f }, { 0.f, 0.f, 1.f });
+		m_RectMesh->AddVertex({ 0.5f, -0.5f, -0.5f }, { 0.f, 1.f, 0.f });
+		m_RectMesh->AddVertex({ 0.5f, 0.5f, -0.5f }, { 0.f, 1.f, 1.f });
+		m_RectMesh->AddVertex({ -0.5f, 0.5f, -0.5f }, { 1.f, 1.f, 1.f });
+		m_RectMesh->AddIndex({ 2,1,0,0,3,2 });
+		m_RectMesh->Initialize(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent }, m_CommandBuffer, findQueueFamilies(physicalDevice), graphicsQueue);
+		m_GP3D.AddMesh(std::move(m_RectMesh));
 
-		//m_RectMesh = std::make_unique<GP2_Mesh>();
-		//m_RectMesh->AddVertex({ -0.5f, -0.5f, 0.f }, { 1.f, 0.5f, 1.f });
-		//m_RectMesh->AddVertex({ 0.5f, -0.5f, 0.f }, { 1.f, 0.f, 0.f });
-		//m_RectMesh->AddVertex({ 0.5f, 0.5f, 0.f }, { 1.f, 1.f, 0.f });
-		//m_RectMesh->AddVertex({ -0.5f, 0.5f, 0.f }, { 1.f, 1.f, 1.f });
-		//m_RectMesh->AddIndex({ 2,1,0,0,3,2 });
-		//m_RectMesh->Initialize(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent }, findQueueFamilies(physicalDevice), graphicsQueue);
-		//m_GP3D.AddMesh(std::move(m_RectMesh));
 
-		std::unique_ptr<GP2_Mesh> m_ParsedMesh = std::make_unique<GP2_Mesh>();
+		/*std::unique_ptr<GP2_Mesh> m_ParsedMesh = std::make_unique<GP2_Mesh>();
 		m_ParsedMesh->ParseOBJ("D:\\DAE\\sm4\\graphics prog2\\Resources\\lowpoly_bunny2.obj", true);
 		m_ParsedMesh->Initialize(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent }, m_CommandBuffer, findQueueFamilies(physicalDevice), graphicsQueue);
-		m_GP3D.AddMesh(std::move(m_ParsedMesh));
+		m_GP3D.AddMesh(std::move(m_ParsedMesh));*/
+
+
 
 		createRenderPass();
 		
