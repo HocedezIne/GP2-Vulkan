@@ -19,6 +19,7 @@ public:
 
 	void Draw(VkPipelineLayout pipelineLayout, VkCommandBuffer cmdBuffer);
 
+	void AddVertex(const glm::vec2& pos, const glm::vec3& color);
 	void AddVertex(const glm::vec3& pos, const glm::vec3& color);
 	void AddVertex(std::vector<GP2_Vertex> vertices);
 	void AddIndex(uint16_t index);

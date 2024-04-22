@@ -3,6 +3,8 @@
 #include <vulkanbase/VulkanUtil.h>
 #include <vulkanbase/VulkanBase.h>
 
+#include <filesystem>
+
 void GP2_Mesh::Initialize(const VulkanContext& context, GP2_CommandBuffer cmdBuffer, QueueFamilyIndices queueFamInd, VkQueue graphicsQueue)
 {
 	m_VkDevice = context.device;
@@ -39,6 +41,11 @@ void GP2_Mesh::Draw(VkPipelineLayout pipelineLayout, VkCommandBuffer cmdBuffer)
 	vkCmdDrawIndexed(cmdBuffer, static_cast<uint32_t>(m_Indices.size()), 1, 0, 0, 0);
 }
 
+void GP2_Mesh::AddVertex(const glm::vec2& pos, const glm::vec3& color)
+{
+	m_Vertices.push_back(GP2_Vertex{ {pos, 0.f}, color });
+}
+
 void GP2_Mesh::AddVertex(const glm::vec3& pos, const glm::vec3& color)
 {
 	m_Vertices.push_back(GP2_Vertex{ pos, color });
@@ -61,7 +68,8 @@ void GP2_Mesh::AddIndex(std::vector<uint16_t> indices)
 
 bool GP2_Mesh::ParseOBJ(const std::string& filename, bool flipAxisAndWinding)
 {
-	//auto path = std::filesystem::current_path();
+	auto path = std::filesystem::current_path();
+	std::cout << path << std::endl;
 
 	std::ifstream file(filename);
 	if (!file)
@@ -69,18 +77,20 @@ bool GP2_Mesh::ParseOBJ(const std::string& filename, bool flipAxisAndWinding)
 
 	std::vector<glm::vec3> positions{};
 	//std::vector<glm::vec3> normals{};
-	std::vector<glm::vec3> colors{};
+	//std::vector<glm::vec3> colors{};
 	//std::vector<glm::vec2> UVs{};
 
 	m_Vertices.clear();
 	m_Indices.clear();
 
 	std::string sCommand;
+
 	// start a while iteration ending when the end of file is reached (ios::eof)
 	while (!file.eof())
 	{
 		//read the first word of the string, use the >> operator (istream::operator>>) 
 		file >> sCommand;
+
 		//use conditional statements to process the different commands	
 		if (sCommand == "#")
 		{
@@ -92,22 +102,22 @@ bool GP2_Mesh::ParseOBJ(const std::string& filename, bool flipAxisAndWinding)
 			float x, y, z;
 			file >> x >> y >> z;
 
-			positions.emplace_back(x, y, z);
+			m_Vertices.emplace_back(GP2_Vertex{ {x,y,z}, {1.0f,1.0f,1.0f} });
 		}
 		else if (sCommand == "vt")
 		{
 			// Vertex TexCoord
-			float u, v;
-			file >> u >> v;
+			//float u, v;
+			//file >> u >> v;
 			// TODO implement UVs
 			//UVs.emplace_back(u, 1 - v);
-			colors.emplace_back(u, 1 - v, 1.f);
+			//colors.emplace_back(u, 1 - v, 1.f);
 		}
 		else if (sCommand == "vn")
 		{
 			// Vertex Normal
-			float x, y, z;
-			file >> x >> y >> z;
+			//float x, y, z;
+			//file >> x >> y >> z;
 
 			// TODO implement normals
 			//normals.emplace_back(x, y, z);
@@ -128,8 +138,8 @@ bool GP2_Mesh::ParseOBJ(const std::string& filename, bool flipAxisAndWinding)
 			{
 				// OBJ format uses 1-based arrays
 				file >> iPosition;
-				vertex.pos = positions[iPosition - 1];
-				vertex.color = { 1.f, 1.f, 1.f }; // TODO remove once using UV's 
+				//vertex.pos = positions[iPosition - 1];
+				//vertex.color = { 1.f, 1.f, 1.f };
 
 				if ('/' == file.peek())//is next in buffer ==  '/' ?
 				{
@@ -154,9 +164,8 @@ bool GP2_Mesh::ParseOBJ(const std::string& filename, bool flipAxisAndWinding)
 					}
 				}
 
-				m_Vertices.push_back(vertex);
-				tempIndices[iFace] = uint32_t(m_Vertices.size()) - 1;
-				//indices.push_back(uint32_t(vertices.size()) - 1);
+				//m_Vertices.push_back(vertex);
+				tempIndices[iFace] = iPosition-1;
 			}
 
 			m_Indices.push_back(tempIndices[0]);
@@ -174,47 +183,6 @@ bool GP2_Mesh::ParseOBJ(const std::string& filename, bool flipAxisAndWinding)
 		//read till end of line and ignore all remaining chars
 		file.ignore(1000, '\n');
 	}
-
-	// TODO tangents
-	////Cheap Tangent Calculations
-	//for (uint32_t i = 0; i < m_Indices.size(); i += 3)
-	//{
-	//	uint32_t index0 = m_Indices[i];
-	//	uint32_t index1 = m_Indices[size_t(i) + 1];
-	//	uint32_t index2 = m_Indices[size_t(i) + 2];
-
-	//	const glm::vec3& p0 = m_Vertices[index0].pos;
-	//	const glm::vec3& p1 = m_Vertices[index1].pos;
-	//	const glm::vec3& p2 = m_Vertices[index2].pos;
-	//	const Vector2& uv0 = vertices[index0].uv;
-	//	const Vector2& uv1 = vertices[index1].uv;
-	//	const Vector2& uv2 = vertices[index2].uv;
-
-	//	const Vector3 edge0 = p1 - p0;
-	//	const Vector3 edge1 = p2 - p0;
-	//	const Vector2 diffX = Vector2(uv1.x - uv0.x, uv2.x - uv0.x);
-	//	const Vector2 diffY = Vector2(uv1.y - uv0.y, uv2.y - uv0.y);
-	//	float r = 1.f / Vector2::Cross(diffX, diffY);
-
-	//	Vector3 tangent = (edge0 * diffY.y - edge1 * diffY.x) * r;
-	//	vertices[index0].tangent += tangent;
-	//	vertices[index1].tangent += tangent;
-	//	vertices[index2].tangent += tangent;
-	//}
-
-	//////Create the Tangents (reject)
-	//for (auto& v : vertices)
-	//{
-	//	v.tangent = Vector3::Reject(v.tangent, v.normal).Normalized();
-
-	//	if (flipAxisAndWinding)
-	//	{
-	//		v.position.z *= -1.f;
-	//		v.normal.z *= -1.f;
-	//		v.tangent.z *= -1.f;
-	//	}
-
-	//}
 
 	return true;
 }

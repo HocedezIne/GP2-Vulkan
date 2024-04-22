@@ -69,9 +69,9 @@ private:
 	float m_Rotation{};
 	float m_Radius{ 10.f };
 
-	glm::vec3 m_CameraPos{ 2.f,2.f,2.f };
-	glm::vec3 m_CameraForward{0.f, 0.f, 1.f};
-	glm::vec3 m_CameraRight{ 1.f, 0.f, 0.f };
+	glm::vec3 m_CameraPos{ 0.f,1.f,0.f };
+	glm::vec3 m_CameraForward{1.f, 0.f, 0.f};
+	glm::vec3 m_CameraRight{ 0.f, 0.f, 1.f };
 	const glm::vec3 m_CameraUp{ 0.f,1.f,0.f };
 	const float m_FovAngle{ 45.f };
 	const float m_AspectRatio{ swapChainExtent.width / (float)swapChainExtent.height };
@@ -136,7 +136,7 @@ private:
 		//m_GP3D.AddMesh(std::move(m_RectMesh));
 
 		std::unique_ptr<GP2_Mesh> m_ParsedMesh = std::make_unique<GP2_Mesh>();
-		m_ParsedMesh->ParseOBJ("D:\\DAE\\sm4\\graphics prog2\\Resources\\simple_cube.obj", false);
+		m_ParsedMesh->ParseOBJ("D:\\DAE\\sm4\\graphics prog2\\Resources\\lowpoly_bunny2.obj", true);
 		m_ParsedMesh->Initialize(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent }, m_CommandBuffer, findQueueFamilies(physicalDevice), graphicsQueue);
 		m_GP3D.AddMesh(std::move(m_ParsedMesh));
 
