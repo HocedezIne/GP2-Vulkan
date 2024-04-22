@@ -1,7 +1,6 @@
 #include "vulkanbase/VulkanBase.h"
 
 #include <glm/gtc/matrix_transform.hpp>
-#include <chrono>
 
 #include "GP2_Vertex.h"
 
@@ -90,9 +89,6 @@ void VulkanBase::drawFrame() {
 	m_GP2D.Record(m_CommandBuffer, swapChainExtent, CURRENT_FRAME);
 
 	// 3d camera matrix
-	static auto startTime = std::chrono::high_resolution_clock::now();
-	auto currentTime = std::chrono::high_resolution_clock::now();
-	float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
 	UniformBufferObject ubo{};
 	ubo.model = glm::mat4{ 1.f };
 	ubo.view = glm::lookAt(m_CameraPos, m_CameraForward, m_CameraUp);

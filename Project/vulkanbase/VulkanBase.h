@@ -69,7 +69,7 @@ private:
 	float m_Rotation{};
 	float m_Radius{ 10.f };
 
-	glm::vec3 m_CameraPos{ 0.f,1.f,0.f };
+	glm::vec3 m_CameraPos{ -5.f, 1.f, 0.f };
 	glm::vec3 m_CameraForward{1.f, 0.f, 0.f};
 	glm::vec3 m_CameraRight{ 0.f, 0.f, 1.f };
 	const glm::vec3 m_CameraUp{ 0.f,1.f,0.f };
