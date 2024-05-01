@@ -7,6 +7,8 @@
 #include <GLFW/glfw3native.h>
 #include "VulkanUtil.h"
 
+#include "stb_image.h"
+
 #include <iostream>
 #include <stdexcept>
 #include <vector>
@@ -24,6 +26,7 @@
 #include "GP2_GraphicsPipeline2D.h"
 #include "GP2_GraphicsPipeline3D.h"
 #include "GP2_UniformBufferObject.h"
+#include "GP2_ImageBuffer.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -95,15 +98,17 @@ private:
 
 		m_CommandPool.Initialize(device, findQueueFamilies(physicalDevice));
 		m_CommandBuffer = m_CommandPool.CreateCommandBuffer();
-		
-		// week 03
-		//std::unique_ptr<GP2_Mesh> m_TriangleMesh = std::make_unique<GP2_Mesh>();
-		//m_TriangleMesh->AddVertex({ 0.f, -0.5f, 0.f }, { 1.f, 1.f, 1.f });
-		//m_TriangleMesh->AddVertex({ 0.5f, 0.5f, 0.f }, { 0.f, 1.f, 0.f });
-		//m_TriangleMesh->AddVertex({ -0.5f, 0.5f, 0.f }, { 0.f, 0.f, 1.f });
-		//m_TriangleMesh->AddIndex({ 2,1,0 });
-		//m_TriangleMesh->Initialize(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent }, m_CommandBuffer, findQueueFamilies(physicalDevice), graphicsQueue);
-		//m_GP2D.AddMesh(std::move(m_TriangleMesh));
+
+		m_Image = new GP2_ImageBuffer{ VulkanContext{ device, physicalDevice, renderPass, swapChainExtent },
+			"D:\\DAE\\sm4\\graphics prog2\\Resources\\murder.png", findQueueFamilies(physicalDevice), graphicsQueue	};
+
+		std::unique_ptr<GP2_Mesh> m_TriangleMesh = std::make_unique<GP2_Mesh>();
+		m_TriangleMesh->AddVertex({ 0.f, -0.5f, 0.f }, { 1.f, 1.f, 1.f });
+		m_TriangleMesh->AddVertex({ 0.5f, 0.5f, 0.f }, { 0.f, 1.f, 0.f });
+		m_TriangleMesh->AddVertex({ -0.5f, 0.5f, 0.f }, { 0.f, 0.f, 1.f });
+		m_TriangleMesh->AddIndex({ 2,1,0 });
+		m_TriangleMesh->Initialize(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent }, m_CommandBuffer, findQueueFamilies(physicalDevice), graphicsQueue);
+		m_GP2D.AddMesh(std::move(m_TriangleMesh));
 
 		//std::unique_ptr<GP2_Mesh> m_RectMesh = std::make_unique<GP2_Mesh>();
 		//m_RectMesh->AddVertex({ 0.25f, -0.5f, 0.f }, { 1.f, 0.5f, 1.f });
@@ -135,14 +140,14 @@ private:
 		m_RectMesh->Initialize(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent }, m_CommandBuffer, findQueueFamilies(physicalDevice), graphicsQueue);
 		m_GP3D.AddMesh(std::move(m_RectMesh));
 
-		m_RectMesh = std::make_unique<GP2_Mesh>();
-		m_RectMesh->AddVertex({ -0.5f, -0.5f, -0.5f }, { 0.f, 0.f, 1.f });
-		m_RectMesh->AddVertex({ 0.5f, -0.5f, -0.5f }, { 0.f, 1.f, 0.f });
-		m_RectMesh->AddVertex({ 0.5f, 0.5f, -0.5f }, { 0.f, 1.f, 1.f });
-		m_RectMesh->AddVertex({ -0.5f, 0.5f, -0.5f }, { 1.f, 1.f, 1.f });
-		m_RectMesh->AddIndex({ 2,1,0,0,3,2 });
-		m_RectMesh->Initialize(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent }, m_CommandBuffer, findQueueFamilies(physicalDevice), graphicsQueue);
-		m_GP3D.AddMesh(std::move(m_RectMesh));
+		//m_RectMesh = std::make_unique<GP2_Mesh>();
+		//m_RectMesh->AddVertex({ -0.5f, -0.5f, -0.5f }, { 0.f, 0.f, 1.f });
+		//m_RectMesh->AddVertex({ 0.5f, -0.5f, -0.5f }, { 0.f, 1.f, 0.f });
+		//m_RectMesh->AddVertex({ 0.5f, 0.5f, -0.5f }, { 0.f, 1.f, 1.f });
+		//m_RectMesh->AddVertex({ -0.5f, 0.5f, -0.5f }, { 1.f, 1.f, 1.f });
+		//m_RectMesh->AddIndex({ 2,1,0,0,3,2 });
+		//m_RectMesh->Initialize(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent }, m_CommandBuffer, findQueueFamilies(physicalDevice), graphicsQueue);
+		//m_GP3D.AddMesh(std::move(m_RectMesh));
 
 
 		/*std::unique_ptr<GP2_Mesh> m_ParsedMesh = std::make_unique<GP2_Mesh>();
@@ -185,6 +190,8 @@ private:
 		for (auto framebuffer : swapChainFramebuffers) {
 			vkDestroyFramebuffer(device, framebuffer, nullptr);
 		}
+
+		m_Image->Destroy();
 
 		m_GP2D.CleanUp();
 		m_GP3D.CleanUp();
@@ -230,6 +237,8 @@ private:
 
 	GP2_CommandPool m_CommandPool;
 	GP2_CommandBuffer m_CommandBuffer;
+
+	GP2_ImageBuffer* m_Image{};
 
 	QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
 	

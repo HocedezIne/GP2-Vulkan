@@ -68,7 +68,6 @@ void GP2_Buffer::CopyData(QueueFamilyIndices queueFamInd, GP2_Buffer sourceBuffe
 	cmdBuffer.EndRecording();
 
 	VkSubmitInfo submitInfo{};
-	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 	cmdBuffer.Submit(submitInfo);
 	vkQueueSubmit(graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
 	vkQueueWaitIdle(graphicsQueue);

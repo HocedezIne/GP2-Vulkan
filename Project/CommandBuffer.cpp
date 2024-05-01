@@ -16,11 +16,11 @@ void GP2_CommandBuffer::Reset() const
 	vkResetCommandBuffer(m_CommandBuffer, /*VkCommandBufferResetFlagBits*/ 0);
 }
 
-void GP2_CommandBuffer::BeginRecording() const
+void GP2_CommandBuffer::BeginRecording(VkCommandBufferUsageFlags flags) const
 {
 	VkCommandBufferBeginInfo beginInfo{};
 	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-	beginInfo.flags = 0;
+	beginInfo.flags = flags;
 	beginInfo.pInheritanceInfo = nullptr;
 
 	if (vkBeginCommandBuffer(m_CommandBuffer, &beginInfo) != VK_SUCCESS)
@@ -39,6 +39,7 @@ void GP2_CommandBuffer::EndRecording() const
 
 void GP2_CommandBuffer::Submit(VkSubmitInfo& info) const
 {
+	info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 	info.commandBufferCount = 1;
 	info.pCommandBuffers = &m_CommandBuffer;
 }
