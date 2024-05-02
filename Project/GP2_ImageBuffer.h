@@ -10,6 +10,11 @@ public:
 	GP2_ImageBuffer(const VulkanContext& context, const std::string& filePath, QueueFamilyIndices queueFamInd, VkQueue graphicsQueue);
 	~GP2_ImageBuffer() = default;
 
+	void CreateImageView();
+
+	static VkImageView GP2_ImageBuffer::createImageView(VkDevice Vkdevice, VkImage image, VkFormat format);
+	void CreateSampler();
+
 	void Destroy();
 
 private:
@@ -38,6 +43,8 @@ private:
 
 	VkImage m_Image{};
 	VkDeviceMemory m_ImageMemory{};
+	VkImageView m_ImageView{};
+	VkSampler m_Sampler{};
 
 	GP2_Buffer* m_StagingBuffer{};
 

@@ -131,6 +131,9 @@ void GP2_ImageBuffer::CopyBufferToImage(VkBuffer buffer, QueueFamilyIndices queu
 
 void GP2_ImageBuffer::Destroy()
 {
+	vkDestroySampler(m_VkDevice, m_Sampler, nullptr);
+	vkDestroyImageView(m_VkDevice, m_ImageView, nullptr);
+
 	vkDestroyImage(m_VkDevice, m_Image, nullptr);
 	vkFreeMemory(m_VkDevice, m_ImageMemory, nullptr);
 }
@@ -183,4 +186,55 @@ void GP2_ImageBuffer::CreateImage()
 		throw std::runtime_error("failed to allocate image memory\n");
 
 	vkBindImageMemory(m_VkDevice, m_Image, m_ImageMemory, 0);
+}
+
+void GP2_ImageBuffer::CreateImageView()
+{
+	m_ImageView = createImageView(m_VkDevice, m_Image, VK_FORMAT_R8G8B8A8_SRGB);
+}
+
+void GP2_ImageBuffer::CreateSampler()
+{
+	VkPhysicalDeviceProperties properties{};
+	vkGetPhysicalDeviceProperties(m_VkPhysicalDevice, &properties);
+
+	VkSamplerCreateInfo samplerInfo{};
+	samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
+	samplerInfo.magFilter = VK_FILTER_LINEAR;
+	samplerInfo.minFilter = VK_FILTER_LINEAR;
+	samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+	samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+	samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+	samplerInfo.anisotropyEnable = VK_TRUE;
+	samplerInfo.maxAnisotropy = properties.limits.maxSamplerAnisotropy;
+	samplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
+	samplerInfo.unnormalizedCoordinates = VK_FALSE;
+	samplerInfo.compareEnable = VK_FALSE;
+	samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
+	samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
+	samplerInfo.mipLodBias = 0.f;
+	samplerInfo.minLod = 0.f;
+	samplerInfo.maxLod = 0.f;
+
+	if (vkCreateSampler(m_VkDevice, &samplerInfo, nullptr, &m_Sampler) != VK_SUCCESS)
+		throw std::runtime_error("failed to create texture sampler!");
+}
+
+VkImageView GP2_ImageBuffer::createImageView(VkDevice Vkdevice, VkImage image, VkFormat format)
+{
+	VkImageViewCreateInfo viewInfo{};
+	viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+	viewInfo.image = image;
+	viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+	viewInfo.format = format;
+	viewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+	viewInfo.subresourceRange.baseMipLevel = 0;
+	viewInfo.subresourceRange.levelCount = 1;
+	viewInfo.subresourceRange.baseArrayLayer = 0;
+	viewInfo.subresourceRange.layerCount = 1;
+
+	VkImageView imageView;
+	if (vkCreateImageView(Vkdevice, &viewInfo, nullptr, &imageView) != VK_SUCCESS)
+		throw std::runtime_error("failed to create texture image view!\n");
+	return imageView;
 }

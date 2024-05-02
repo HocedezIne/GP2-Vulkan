@@ -101,6 +101,8 @@ private:
 
 		m_Image = new GP2_ImageBuffer{ VulkanContext{ device, physicalDevice, renderPass, swapChainExtent },
 			"D:\\DAE\\sm4\\graphics prog2\\Resources\\murder.png", findQueueFamilies(physicalDevice), graphicsQueue	};
+		m_Image->CreateImageView();
+		m_Image->CreateSampler();
 
 		std::unique_ptr<GP2_Mesh> m_TriangleMesh = std::make_unique<GP2_Mesh>();
 		m_TriangleMesh->AddVertex({ 0.f, -0.5f, 0.f }, { 1.f, 1.f, 1.f });
