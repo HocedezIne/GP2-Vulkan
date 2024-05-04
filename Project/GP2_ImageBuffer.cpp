@@ -15,6 +15,9 @@ GP2_ImageBuffer::GP2_ImageBuffer(const VulkanContext& context, const std::string
 	m_StagingBuffer->Destroy();
 	delete m_StagingBuffer;
 	m_StagingBuffer = nullptr;
+
+	CreateImageView();
+	CreateSampler();
 }
 
 void GP2_ImageBuffer::TransitionLayout(QueueFamilyIndices queueFamInd, VkQueue graphicsQueue, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout)

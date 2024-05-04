@@ -92,7 +92,7 @@ void VulkanBase::drawFrame() {
 	UniformBufferObject ubo{};
 	ubo.model = glm::mat4{ 1.f };
 	ubo.view = glm::lookAt(m_CameraPos, m_CameraForward, m_CameraUp);
-	ubo.proj = glm::perspective(glm::radians(m_FovAngle), m_AspectRatio, 0.1f, 10.f);
+	ubo.proj = glm::perspective(glm::radians(m_FovAngle), m_AspectRatio, 0.1f, 100.f);
 	ubo.proj[1][1] *= -1;
 
 	m_GP3D.SetUBO(ubo, 0);

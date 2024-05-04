@@ -6,6 +6,7 @@
 #include "GP2_Mesh.h"
 #include "GP2_Shader.h"
 #include "GP2_DescriptorPool.h"
+#include "GP2_ImageBuffer.h"
 
 template <class UBO>
 class GP2_GraphicsPipeline3D
@@ -14,7 +15,7 @@ public:
 	GP2_GraphicsPipeline3D(const std::string& vertexShaderFile, const std::string& fragmentShaderFile);
 	~GP2_GraphicsPipeline3D() = default;
 
-	void Initialize(const VulkanContext& context, size_t descriptorPoolCount);
+	void Initialize(const VulkanContext& context, size_t descriptorPoolCount, const std::string& imageFile, QueueFamilyIndices queueFamInd, VkQueue graphicsQueue);
 
 	void CleanUp();
 
@@ -39,6 +40,8 @@ private:
 
 	GP2_Shader m_Shader;
 
+	GP2_ImageBuffer* m_ImageBuffer;
+
 	GP2_DescriptorPool<UBO>* m_DescriptorPool{};
 
 	std::vector<std::unique_ptr<GP2_Mesh>> m_Meshes{};
@@ -58,6 +61,9 @@ void GP2_GraphicsPipeline3D<UBO>::CleanUp()
 		mesh->DestroyMesh();
 	}
 
+	m_ImageBuffer->Destroy();
+	m_ImageBuffer = nullptr;
+
 	vkDestroyPipeline(m_Device, m_GraphicsPipeline, nullptr);
 	vkDestroyPipelineLayout(m_Device, m_PipelineLayout, nullptr);
 
@@ -65,15 +71,18 @@ void GP2_GraphicsPipeline3D<UBO>::CleanUp()
 }
 
 template <class UBO>
-void GP2_GraphicsPipeline3D<UBO>::Initialize(const VulkanContext& context, size_t descriptorPoolCount)
+void GP2_GraphicsPipeline3D<UBO>::Initialize(const VulkanContext& context, size_t descriptorPoolCount, const std::string& imageFile, QueueFamilyIndices queueFamInd, VkQueue graphicsQueue)
 {
 	m_Device = context.device;
 	m_RenderPass = context.renderPass;
 
 	m_Shader.Initialize(context.device);
 
+	m_ImageBuffer = new GP2_ImageBuffer{ context, imageFile, queueFamInd, graphicsQueue };
+
 	m_DescriptorPool = new GP2_DescriptorPool<UBO>{ context.device, descriptorPoolCount };
 	m_DescriptorPool->Initialize(context);
+	m_DescriptorPool->CreateDescriptorSets(m_ImageBuffer->GetView(), m_ImageBuffer->GetSampler());
 
 	CreateGraphicsPipeline();
 }
@@ -82,7 +91,7 @@ template <class UBO>
 GP2_GraphicsPipeline3D<UBO>::GP2_GraphicsPipeline3D(const std::string& vertexShaderFile, const std::string& fragmentShaderFile) :
 	m_Shader{ vertexShaderFile, fragmentShaderFile }
 {
-
+	
 }
 
 template <class UBO>

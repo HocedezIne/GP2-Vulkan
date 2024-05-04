@@ -75,6 +75,7 @@ void GP2_GraphicsPipeline2D<UBO>::Initialize(const VulkanContext& context, size_
 
 	m_DescriptorPool = new GP2_DescriptorPool<UBO>{ context.device, descriptorPoolCount };
 	m_DescriptorPool->Initialize(context);
+	m_DescriptorPool->CreateDescriptorSets();
 
 	CreateGraphicsPipeline();
 }

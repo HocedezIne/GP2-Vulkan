@@ -78,7 +78,8 @@ bool GP2_Mesh::ParseOBJ(const std::string& filename, bool flipAxisAndWinding)
 	std::vector<glm::vec3> positions{};
 	//std::vector<glm::vec3> normals{};
 	//std::vector<glm::vec3> colors{};
-	//std::vector<glm::vec2> UVs{};
+	std::vector<glm::vec2> UVs{};
+	bool hasUVs{ false };
 
 	m_Vertices.clear();
 	m_Indices.clear();
@@ -102,16 +103,16 @@ bool GP2_Mesh::ParseOBJ(const std::string& filename, bool flipAxisAndWinding)
 			float x, y, z;
 			file >> x >> y >> z;
 
-			m_Vertices.emplace_back(GP2_Vertex{ {x,y,z}, {1.0f,1.0f,1.0f} });
+			positions.emplace_back(x, y, z);
 		}
 		else if (sCommand == "vt")
 		{
+			if (!hasUVs) hasUVs = true;
 			// Vertex TexCoord
-			//float u, v;
-			//file >> u >> v;
-			// TODO implement UVs
-			//UVs.emplace_back(u, 1 - v);
-			//colors.emplace_back(u, 1 - v, 1.f);
+			float u, v;
+			file >> u >> v;
+			
+			UVs.emplace_back(u, 1 - v);
 		}
 		else if (sCommand == "vn")
 		{
@@ -150,7 +151,7 @@ bool GP2_Mesh::ParseOBJ(const std::string& filename, bool flipAxisAndWinding)
 						// Optional texture coordinate
 						file >> iTexCoord;
 						// TODO parse UV coords
-						//vertex.uv = UVs[iTexCoord - 1];
+						vertex.texCoord = UVs[iTexCoord - 1];
 					}
 
 					if ('/' == file.peek())
@@ -182,6 +183,12 @@ bool GP2_Mesh::ParseOBJ(const std::string& filename, bool flipAxisAndWinding)
 		}
 		//read till end of line and ignore all remaining chars
 		file.ignore(1000, '\n');
+	}
+
+	for (int i{}; i < positions.size(); ++i)
+	{
+		if(hasUVs) m_Vertices.emplace_back(GP2_Vertex{ positions[i],{1.f,1.f,1.f}, UVs[i] });
+		else m_Vertices.emplace_back(GP2_Vertex{ positions[i],{1.f,1.f,1.f}, {1.f,1.f} });
 	}
 
 	return true;
