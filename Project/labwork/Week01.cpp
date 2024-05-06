@@ -29,19 +29,19 @@ void VulkanBase::keyEvent(int key, int scancode, int action, int mods)
 {
 	if (key == GLFW_KEY_W && (action == GLFW_REPEAT || action == GLFW_PRESS))
 	{
-		m_CameraPos += m_CameraForward * 0.1f;
+		m_CameraPos += m_CameraForward * 1.f;
 	}
 	if (key == GLFW_KEY_S && (action == GLFW_REPEAT || action == GLFW_PRESS))
 	{
-		m_CameraPos -= m_CameraForward * 0.1f;
+		m_CameraPos -= m_CameraForward * 1.f;
 	}
 	if (key == GLFW_KEY_A && (action == GLFW_REPEAT || action == GLFW_PRESS))
 	{
-		m_CameraPos -= m_CameraRight *.1f;
+		m_CameraPos -= m_CameraRight * 1.f;
 	}
 	if (key == GLFW_KEY_D && (action == GLFW_REPEAT || action == GLFW_PRESS))
 	{
-		m_CameraPos += m_CameraRight  * 0.1f;
+		m_CameraPos += m_CameraRight * 1.f;
 	}
 }
 
@@ -53,10 +53,10 @@ void VulkanBase::mouseMove(GLFWwindow* window, double xpos, double ypos)
 		float dx = static_cast<float>(xpos) - m_DragStart.x;
 
 		if (dx > 0) {
-			m_Rotation += 0.01;
+			m_Rotation += 0.01f;
 		}
 		else {
-			m_Rotation -= 0.01;
+			m_Rotation -= 0.01f;
 		}
 	}
 }
