@@ -16,7 +16,7 @@ GP2_ImageBuffer::GP2_ImageBuffer(const VulkanContext& context, const std::string
 	delete m_StagingBuffer;
 	m_StagingBuffer = nullptr;
 
-	CreateImageView();
+	m_ImageView = createImageViewStatic(m_VkDevice, m_Image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT);
 	CreateSampler();
 }
 
@@ -191,11 +191,6 @@ void GP2_ImageBuffer::CreateImage()
 	vkBindImageMemory(m_VkDevice, m_Image, m_ImageMemory, 0);
 }
 
-void GP2_ImageBuffer::CreateImageView()
-{
-	m_ImageView = createImageView(m_VkDevice, m_Image, VK_FORMAT_R8G8B8A8_SRGB);
-}
-
 void GP2_ImageBuffer::CreateSampler()
 {
 	VkPhysicalDeviceProperties properties{};
@@ -223,14 +218,14 @@ void GP2_ImageBuffer::CreateSampler()
 		throw std::runtime_error("failed to create texture sampler!");
 }
 
-VkImageView GP2_ImageBuffer::createImageView(VkDevice Vkdevice, VkImage image, VkFormat format)
+VkImageView GP2_ImageBuffer::createImageViewStatic(VkDevice Vkdevice, VkImage image, VkFormat format, VkImageAspectFlags aspectFlags)
 {
 	VkImageViewCreateInfo viewInfo{};
 	viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
 	viewInfo.image = image;
 	viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
 	viewInfo.format = format;
-	viewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+	viewInfo.subresourceRange.aspectMask = aspectFlags;
 	viewInfo.subresourceRange.baseMipLevel = 0;
 	viewInfo.subresourceRange.levelCount = 1;
 	viewInfo.subresourceRange.baseArrayLayer = 0;

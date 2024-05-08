@@ -26,6 +26,7 @@
 #include "GP2_GraphicsPipeline2D.h"
 #include "GP2_GraphicsPipeline3D.h"
 #include "GP2_UniformBufferObject.h"
+#include "GP2_DepthBuffer.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -97,6 +98,8 @@ private:
 
 		m_CommandPool.Initialize(device, findQueueFamilies(physicalDevice));
 		m_CommandBuffer = m_CommandPool.CreateCommandBuffer();
+
+		m_DepthBuffer.Initialize();
 
 		std::unique_ptr<GP2_Mesh<GP2_2DVertex>> m_TriangleMesh = std::make_unique<GP2_Mesh<GP2_2DVertex>>();
 		m_TriangleMesh->AddVertex({ GP2_2DVertex{ { 0.f, -0.5f, 0.f }, { 1.f, 1.f, 1.f }},
@@ -185,6 +188,8 @@ private:
 			vkDestroyFramebuffer(device, framebuffer, nullptr);
 		}
 
+		m_DepthBuffer.Destroy();
+
 		m_GP2D.CleanUp();
 		m_GP3D.CleanUp();
 
@@ -213,6 +218,8 @@ private:
 			throw std::runtime_error("failed to create window surface!");
 		}
 	}
+
+	GP2_DepthBuffer m_DepthBuffer;
 
 	const size_t MAX_FRAMES_IN_FLIGHT = 1;
 	const int CURRENT_FRAME = 0;

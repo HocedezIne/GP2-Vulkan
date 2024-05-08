@@ -10,7 +10,7 @@ public:
 	GP2_ImageBuffer(const VulkanContext& context, const std::string& filePath, QueueFamilyIndices queueFamInd, VkQueue graphicsQueue);
 	~GP2_ImageBuffer() = default;
 
-	static VkImageView GP2_ImageBuffer::createImageView(VkDevice Vkdevice, VkImage image, VkFormat format);
+	static VkImageView GP2_ImageBuffer::createImageViewStatic(VkDevice Vkdevice, VkImage image, VkFormat format, VkImageAspectFlags aspectFlags);
 
 	VkImageView GetView() const { return m_ImageView; };
 	VkSampler GetSampler() const { return m_Sampler; };
@@ -23,7 +23,6 @@ private:
 	void TransitionLayout(QueueFamilyIndices queueFamInd, VkQueue graphicsQueue, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout);
 	void CopyBufferToImage(VkBuffer buffer, QueueFamilyIndices queueFamInd, VkQueue graphicsQueue);
 
-	void CreateImageView();
 	void CreateSampler();
 
 	uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties)

@@ -45,7 +45,7 @@ set(SOURCES
     "GP2_Buffer.h" "GP2_Buffer.cpp" 
     "GP2_GraphicsPipeline2D.h" "GP2_GraphicsPipeline3D.h" 
     "GP2_DescriptorPool.h" 
-    "GP2_UniformBufferObject.h" "GP2_ImageBuffer.h" "GP2_ImageBuffer.cpp")
+    "GP2_UniformBufferObject.h" "GP2_ImageBuffer.h" "GP2_ImageBuffer.cpp" "GP2_DepthBuffer.h" "GP2_DepthBuffer.cpp")
 
 set(THIRD_PARTY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/3rdParty")
 set(THIRD_PARTY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/resources")
