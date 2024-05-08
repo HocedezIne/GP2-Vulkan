@@ -99,7 +99,8 @@ private:
 		m_CommandPool.Initialize(device, findQueueFamilies(physicalDevice));
 		m_CommandBuffer = m_CommandPool.CreateCommandBuffer();
 
-		m_DepthBuffer.Initialize();
+		m_DepthBuffer = new GP2_DepthBuffer(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent });
+		m_DepthBuffer->Initialize();
 
 		std::unique_ptr<GP2_Mesh<GP2_2DVertex>> m_TriangleMesh = std::make_unique<GP2_Mesh<GP2_2DVertex>>();
 		m_TriangleMesh->AddVertex({ GP2_2DVertex{ { 0.f, -0.5f, 0.f }, { 1.f, 1.f, 1.f }},
@@ -188,7 +189,7 @@ private:
 			vkDestroyFramebuffer(device, framebuffer, nullptr);
 		}
 
-		m_DepthBuffer.Destroy();
+		m_DepthBuffer->Destroy();
 
 		m_GP2D.CleanUp();
 		m_GP3D.CleanUp();
@@ -219,7 +220,7 @@ private:
 		}
 	}
 
-	GP2_DepthBuffer m_DepthBuffer;
+	GP2_DepthBuffer* m_DepthBuffer{};
 
 	const size_t MAX_FRAMES_IN_FLIGHT = 1;
 	const int CURRENT_FRAME = 0;
