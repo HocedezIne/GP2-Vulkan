@@ -7,8 +7,11 @@
 class GP2_ImageBuffer
 {
 public:
-	GP2_ImageBuffer(const VulkanContext& context, const std::string& filePath, QueueFamilyIndices queueFamInd, VkQueue graphicsQueue);
+	GP2_ImageBuffer(const VulkanContext& context);
 	~GP2_ImageBuffer() = default;
+
+	void LoadImageData(const std::string& filePath, const VulkanContext& context);
+	void Initialize(QueueFamilyIndices queueFamInd, VkQueue graphicsQueue, VkFormat format, VkImageAspectFlags aspectFlags);
 
 	static VkImageView GP2_ImageBuffer::createImageViewStatic(VkDevice Vkdevice, VkImage image, VkFormat format, VkImageAspectFlags aspectFlags);
 
@@ -18,7 +21,6 @@ public:
 	void Destroy();
 
 private:
-	void LoadImageData(const std::string& filePath, const VulkanContext& context);
 	void CreateImage();
 	void TransitionLayout(QueueFamilyIndices queueFamInd, VkQueue graphicsQueue, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout);
 	void CopyBufferToImage(VkBuffer buffer, QueueFamilyIndices queueFamInd, VkQueue graphicsQueue);

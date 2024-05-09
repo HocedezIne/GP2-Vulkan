@@ -2,21 +2,25 @@
 
 #include <vulkanbase/VulkanBase.h>
 
-GP2_ImageBuffer::GP2_ImageBuffer(const VulkanContext& context, const std::string& filePath, QueueFamilyIndices queueFamInd, VkQueue graphicsQueue) :
+GP2_ImageBuffer::GP2_ImageBuffer(const VulkanContext& context) :
 	m_VkDevice(context.device), m_VkPhysicalDevice(context.physicalDevice)
 {
-	LoadImageData(filePath, context);
+
+}
+
+void GP2_ImageBuffer::Initialize(QueueFamilyIndices queueFamInd, VkQueue graphicsQueue, VkFormat format, VkImageAspectFlags aspectFlags)
+{
 	CreateImage();
 
-	TransitionLayout(queueFamInd, graphicsQueue, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+	TransitionLayout(queueFamInd, graphicsQueue, format, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 	CopyBufferToImage(m_StagingBuffer->GetVkBuffer(), queueFamInd, graphicsQueue);
-	TransitionLayout(queueFamInd, graphicsQueue, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+	TransitionLayout(queueFamInd, graphicsQueue, format, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
 	m_StagingBuffer->Destroy();
 	delete m_StagingBuffer;
 	m_StagingBuffer = nullptr;
 
-	m_ImageView = createImageViewStatic(m_VkDevice, m_Image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT);
+	m_ImageView = createImageViewStatic(m_VkDevice, m_Image, format, aspectFlags);
 	CreateSampler();
 }
 

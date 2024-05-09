@@ -3,24 +3,20 @@
 #include <vulkanbase/VulkanUtil.h>
 #include <vector>
 
-static VkFormat findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
+static VkFormat findSupportedFormat(const VkPhysicalDevice& physicalDevice, const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
 
 class GP2_DepthBuffer
 {
 public:
 	GP2_DepthBuffer(const VulkanContext& context);
-	~GP2_DepthBuffer();
+	~GP2_DepthBuffer() = default;
 
-	void Initialize();
+	void Initialize(QueueFamilyIndices queueFamInd, VkQueue graphicsQueue);
 	void Destroy();
-
-	bool hasStencilComponent()
-	{
-		return m_DepthFormat == VK_FORMAT_D32_SFLOAT_S8_UINT || m_DepthFormat == VK_FORMAT_D24_UNORM_S8_UINT;
-	}
 
 private:
 	void CreateDepthImage(int width, int height, VkFormat format);
+	void TransitionLayout(QueueFamilyIndices queueFamInd, VkQueue graphicsQueue, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout);
 
 	uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties)
 	{
@@ -34,6 +30,11 @@ private:
 		}
 
 		throw std::runtime_error("failed to find suitable memory type!");
+	}
+
+	bool hasStencilComponent(VkFormat format)
+	{
+		return format == VK_FORMAT_D32_SFLOAT_S8_UINT || format == VK_FORMAT_D24_UNORM_S8_UINT;
 	}
 
 	VkDevice m_VkDevice;

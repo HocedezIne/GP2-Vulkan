@@ -100,7 +100,7 @@ private:
 		m_CommandBuffer = m_CommandPool.CreateCommandBuffer();
 
 		m_DepthBuffer = new GP2_DepthBuffer(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent });
-		m_DepthBuffer->Initialize();
+		m_DepthBuffer->Initialize(findQueueFamilies(physicalDevice), graphicsQueue);
 
 		std::unique_ptr<GP2_Mesh<GP2_2DVertex>> m_TriangleMesh = std::make_unique<GP2_Mesh<GP2_2DVertex>>();
 		m_TriangleMesh->AddVertex({ GP2_2DVertex{ { 0.f, -0.5f, 0.f }, { 1.f, 1.f, 1.f }},

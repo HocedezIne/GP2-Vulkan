@@ -78,7 +78,9 @@ void GP2_GraphicsPipeline3D<UBO, Vertex>::Initialize(const VulkanContext& contex
 
 	m_Shader.Initialize(context.device);
 
-	m_ImageBuffer = new GP2_ImageBuffer{ context, imageFile, queueFamInd, graphicsQueue };
+	m_ImageBuffer = new GP2_ImageBuffer{ context };
+	m_ImageBuffer->LoadImageData(imageFile, context);
+	m_ImageBuffer->Initialize(queueFamInd, graphicsQueue, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT);
 
 	m_DescriptorPool = new GP2_DescriptorPool<UBO>{ context.device, descriptorPoolCount };
 	m_DescriptorPool->Initialize(context);
