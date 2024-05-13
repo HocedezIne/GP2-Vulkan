@@ -166,6 +166,18 @@ void GP2_GraphicsPipeline3D<UBO, Vertex>::CreateGraphicsPipeline()
 		throw std::runtime_error("failed to create pipeline layout!");
 	}
 
+	VkPipelineDepthStencilStateCreateInfo depthStencil{};
+	depthStencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+	depthStencil.depthTestEnable = VK_TRUE;
+	depthStencil.depthWriteEnable = VK_TRUE;
+	depthStencil.depthCompareOp = VK_COMPARE_OP_LESS;
+	depthStencil.depthBoundsTestEnable = VK_FALSE;
+	depthStencil.minDepthBounds = 0.f;
+	depthStencil.maxDepthBounds = 1.f;
+	depthStencil.stencilTestEnable = VK_FALSE;
+	depthStencil.front = {};
+	depthStencil.back = {};
+
 	VkGraphicsPipelineCreateInfo pipelineInfo{};
 
 	pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
@@ -174,6 +186,7 @@ void GP2_GraphicsPipeline3D<UBO, Vertex>::CreateGraphicsPipeline()
 	pipelineInfo.pStages = m_Shader.GetShaderStages().data();
 	pipelineInfo.pVertexInputState = &m_Shader.CreateVertexInputStateInfo();
 	pipelineInfo.pInputAssemblyState = &m_Shader.CreateInputAssemblyStateInfo();
+	pipelineInfo.pDepthStencilState = &depthStencil;
 
 #pragma region pipelineInfo
 	pipelineInfo.pViewportState = &viewportState;

@@ -1,32 +1,13 @@
 #include "GP2_DepthBuffer.h"
 
 #include <vulkanbase/VulkanBase.h>
-#include "GP2_ImageBuffer.h"
 
-VkFormat findSupportedFormat(const VkPhysicalDevice& physicalDevice, const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features)
+void GP2_DepthBuffer::Initialize(const VulkanContext& context, QueueFamilyIndices queueFamInd, VkQueue graphicsQueue)
 {
-	for (VkFormat format : candidates) {
-		VkFormatProperties props;
-		vkGetPhysicalDeviceFormatProperties(physicalDevice, format, &props);
+	m_VkDevice = context.device;
+	m_VkPhysicalDevice = context.physicalDevice;
+	m_VkExtent = context.swapChainExtent;
 
-		if (tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features) {
-			return format;
-		}
-		else if (tiling == VK_IMAGE_TILING_OPTIMAL && (props.optimalTilingFeatures & features) == features) {
-			return format;
-		}
-	}
-
-	throw std::runtime_error("failed to find supported format!");
-}
-
-GP2_DepthBuffer::GP2_DepthBuffer(const VulkanContext& context) :
-	m_VkDevice(context.device), m_VkPhysicalDevice(context.physicalDevice), m_VkExtent(context.swapChainExtent)
-{
-}
-
-void GP2_DepthBuffer::Initialize(QueueFamilyIndices queueFamInd, VkQueue graphicsQueue)
-{
 	m_DepthFormat = findSupportedFormat(m_VkPhysicalDevice, { VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT },
 		VK_IMAGE_TILING_OPTIMAL,
 		VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
@@ -108,7 +89,7 @@ void GP2_DepthBuffer::TransitionLayout(QueueFamilyIndices queueFamInd, VkQueue g
 		barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
 
 		if (hasStencilComponent(format))
-			barrier.subresourceRange.aspectMask != VK_IMAGE_ASPECT_STENCIL_BIT;
+			barrier.subresourceRange.aspectMask |= VK_IMAGE_ASPECT_STENCIL_BIT;
 	}
 	else
 	{
