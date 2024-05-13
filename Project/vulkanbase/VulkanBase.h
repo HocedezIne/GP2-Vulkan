@@ -69,18 +69,20 @@ private:
 	void mouseMove(GLFWwindow* window, double xpos, double ypos);
 	void mouseEvent(GLFWwindow* window, int button, int action, int mods);
 	glm::vec2 m_DragStart{ 0,0 };
-	float m_Rotation{};
-	float m_Radius{ 10.f };
+	float m_Radius{ 5.f };
 
-	glm::vec3 m_CameraPos{ 0.f, 0.f, 2.f };
-	glm::vec3 m_CameraForward{0.f, 0.f, 1.f};
+	glm::vec3 m_CameraPos{ 0.f, 0.f, 5.f };
+	glm::vec3 m_CameraForward{0.f, 0.f, -1.f};
 	glm::vec3 m_CameraRight{ 1.f, 0.f, 0.f };
-	const glm::vec3 m_CameraUp{ 0.f,1.f,0.f };
+	glm::vec3 m_CameraUp{ 0.f,1.f,0.f };
+	float m_Yaw{ 0.f };
+	float m_Pitch{ 0.f };
+	const float m_CameraMovementSpeed{10.f};
+
 	const float m_FovAngle{ 45.f };
 	const float m_AspectRatio{ swapChainExtent.width / (float)swapChainExtent.height };
 
-	glm::vec3 m_TargetPos{};
-	const glm::vec3 m_UpVector{};
+	glm::mat4 UpdateCamera();
 
 	void initVulkan() {
 		// week 06
@@ -134,19 +136,19 @@ private:
 		//m_GP2D.AddMesh(std::move(m_OvalMesh));
 
 		std::unique_ptr<GP2_Mesh<GP2_3DVertex>> m_RectMesh = std::make_unique<GP2_Mesh<GP2_3DVertex>>();
-		m_RectMesh->AddVertex({ GP2_3DVertex{{-0.5f,-0.5f,0.f}, {1.f,0.f,0.f}, {0.f,1.f}},
-			GP2_3DVertex{{0.5f,-0.5f,0.f}, {0.f,1.f,0.f}, {1.f,1.f}},
-			GP2_3DVertex{{0.5f,0.5f,0.f}, {0.f,0.f,1.f}, {1.f,0.f}},
-			GP2_3DVertex{{-0.5f,0.5f,0.f}, {1.f,1.f,1.f}, {0.f,0.f}} });
+		m_RectMesh->AddVertex({ GP2_3DVertex{{-0.5f,-0.5f,0.f}, {1.f,0.f,0.f}, {0.f,0.f}},
+			GP2_3DVertex{{0.5f,-0.5f,0.f}, {0.f,1.f,0.f}, {1.f,0.f}},
+			GP2_3DVertex{{0.5f,0.5f,0.f}, {0.f,0.f,1.f}, {1.f,1.f}},
+			GP2_3DVertex{{-0.5f,0.5f,0.f}, {1.f,1.f,1.f}, {0.f,1.f}} });
 		m_RectMesh->AddIndex({ 2,1,0,0,3,2 });
 		m_RectMesh->Initialize(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent }, m_CommandBuffer, queueFam, graphicsQueue);
 		m_GP3D.AddMesh(std::move(m_RectMesh));
 
 		m_RectMesh = std::make_unique<GP2_Mesh<GP2_3DVertex>>();
-		m_RectMesh->AddVertex({ GP2_3DVertex{{-0.5f,-0.5f,-0.5f}, {1.f,0.f,0.f}, {0.f,1.f}},
-			GP2_3DVertex{{0.5f,-0.5f,-0.5f}, {0.f,1.f,0.f}, {1.f,1.f}},
-			GP2_3DVertex{{0.5f,0.5f,-0.5f}, {0.f,0.f,1.f}, {1.f,0.f}},
-			GP2_3DVertex{{-0.5f,0.5f,-0.5f}, {1.f,1.f,1.f}, {0.f,0.f}} });
+		m_RectMesh->AddVertex({ GP2_3DVertex{{-0.5f,-0.5f,-0.5f}, {1.f,0.f,0.f}, {0.f,0.f}},
+			GP2_3DVertex{{0.5f,-0.5f,-0.5f}, {0.f,1.f,0.f}, {1.f,0.f}},
+			GP2_3DVertex{{0.5f,0.5f,-0.5f}, {0.f,0.f,1.f}, {1.f,1.f}},
+			GP2_3DVertex{{-0.5f,0.5f,-0.5f}, {1.f,1.f,1.f}, {0.f,1.f}} });
 		m_RectMesh->AddIndex({ 2,1,0,0,3,2 });
 		m_RectMesh->Initialize(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent }, m_CommandBuffer, queueFam, graphicsQueue);
 		m_GP3D.AddMesh(std::move(m_RectMesh));

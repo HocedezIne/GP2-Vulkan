@@ -1,5 +1,7 @@
 #include "vulkanbase/VulkanBase.h"
 
+#include <glm/gtc/matrix_transform.hpp>
+
 void VulkanBase::initWindow() {
 	glfwInit();
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
@@ -28,21 +30,18 @@ void VulkanBase::initWindow() {
 void VulkanBase::keyEvent(int key, int scancode, int action, int mods)
 {
 	if (key == GLFW_KEY_W && (action == GLFW_REPEAT || action == GLFW_PRESS))
-	{
-		m_CameraPos += m_CameraForward * 1.f;
-	}
+		m_CameraPos += m_CameraForward * m_CameraMovementSpeed;
 	if (key == GLFW_KEY_S && (action == GLFW_REPEAT || action == GLFW_PRESS))
-	{
-		m_CameraPos -= m_CameraForward * 1.f;
-	}
+		m_CameraPos -= m_CameraForward * m_CameraMovementSpeed;
 	if (key == GLFW_KEY_A && (action == GLFW_REPEAT || action == GLFW_PRESS))
-	{
-		m_CameraPos -= m_CameraRight * 1.f;
-	}
+		m_CameraPos -= m_CameraRight * m_CameraMovementSpeed;
 	if (key == GLFW_KEY_D && (action == GLFW_REPEAT || action == GLFW_PRESS))
-	{
-		m_CameraPos += m_CameraRight * 1.f;
-	}
+		m_CameraPos += m_CameraRight * m_CameraMovementSpeed;
+
+	if (key == GLFW_KEY_Q && (action == GLFW_REPEAT || action == GLFW_PRESS))
+		m_CameraPos -= m_CameraUp * m_CameraMovementSpeed * 2.f;
+	if (key == GLFW_KEY_E && (action == GLFW_REPEAT || action == GLFW_PRESS))
+		m_CameraPos += m_CameraUp * m_CameraMovementSpeed * 2.f;
 }
 
 void VulkanBase::mouseMove(GLFWwindow* window, double xpos, double ypos)
@@ -53,10 +52,10 @@ void VulkanBase::mouseMove(GLFWwindow* window, double xpos, double ypos)
 		float dx = static_cast<float>(xpos) - m_DragStart.x;
 
 		if (dx > 0) {
-			m_Rotation += 0.01f;
+			m_Yaw += 0.01f;
 		}
 		else {
-			m_Rotation -= 0.01f;
+			m_Pitch -= 0.01f;
 		}
 	}
 }
@@ -70,4 +69,20 @@ void VulkanBase::mouseEvent(GLFWwindow* window, int button, int action, int mods
 		m_DragStart.x = static_cast<float>(xpos);
 		m_DragStart.y = static_cast<float>(ypos);
 	}
+}
+
+glm::mat4 VulkanBase::UpdateCamera()
+{
+	glm::vec3 newForward{ glm::normalize(glm::rotate(glm::mat4(1.0f), -m_Yaw, glm::vec3(0.0f, 1.0f, 0.0f)) *
+					  glm::rotate(glm::mat4(1.0f), m_Pitch, glm::vec3(1.0f, 0.0f, 0.0f)) *
+					  glm::vec4(m_CameraForward, 1.0f))
+	};
+
+	m_CameraForward = newForward;
+	m_CameraRight = glm::cross(m_CameraForward, glm::vec3(0.f, 1.f, 0.f));
+	m_CameraUp = glm::cross(m_CameraRight, m_CameraForward);
+
+	glm::mat4 viewMatrix{ glm::lookAt(m_CameraPos, m_CameraPos + m_CameraForward, m_CameraUp) };
+
+	return viewMatrix;
 }

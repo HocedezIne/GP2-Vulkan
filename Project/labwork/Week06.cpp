@@ -82,7 +82,7 @@ void VulkanBase::drawFrame() {
 
 	// 2d camera matrix
 	GP2_ViewProjection vp{ glm::mat4(1.0f) ,glm::mat4(1.0f) };
-	glm::vec3 scaleFactors(1 / 1.0f, 1 / 1.0f, 1.0f);
+	glm::vec3 scaleFactors(1.0f, 1.0f, 1.0f);
 	vp.view = glm::scale(glm::mat4(1.0f), scaleFactors);
 	vp.view = glm::translate(vp.view, glm::vec3(0, 0, 0));
 
@@ -91,11 +91,11 @@ void VulkanBase::drawFrame() {
 	m_GP2D.Record(m_CommandBuffer, swapChainExtent, CURRENT_FRAME);
 
 	// 3d camera matrix
+	GP2_MeshData meshData{ glm::mat4(1.f) };
 	UniformBufferObject ubo{};
-	ubo.model = glm::mat4{ 1.f };
-	ubo.view = glm::lookAt(m_CameraPos, m_CameraForward, m_CameraUp);
+	ubo.view = UpdateCamera();
 	ubo.proj = glm::perspective(glm::radians(m_FovAngle), m_AspectRatio, 0.1f, 100.f);
-	ubo.proj[1][1] *= -1;
+	
 
 	m_GP3D.SetUBO(ubo, 0);
 	m_GP3D.Record(m_CommandBuffer, swapChainExtent, CURRENT_FRAME);
