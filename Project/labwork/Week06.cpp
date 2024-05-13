@@ -54,9 +54,11 @@ void VulkanBase::beginRenderPass(const GP2_CommandBuffer& cmdBuffer, VkFramebuff
 	renderPassInfo.renderArea.offset = { 0, 0 };
 	renderPassInfo.renderArea.extent = extent;
 
-	VkClearValue clearColor = { {{0.0f, 0.0f, 0.0f, 1.0f}} };
-	renderPassInfo.clearValueCount = 1;
-	renderPassInfo.pClearValues = &clearColor;
+	std::array<VkClearValue,2> clearValues{};
+	clearValues[0].color = { {0.f, 0.f, 0.f, 1.f} };
+	clearValues[1].depthStencil = { 1.f, 0 };
+	renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
+	renderPassInfo.pClearValues = clearValues.data();
 
 	vkCmdBeginRenderPass(cmdBuffer.GetVkCommandBuffer(), &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 }
@@ -92,7 +94,7 @@ void VulkanBase::drawFrame() {
 	UniformBufferObject ubo{};
 	ubo.model = glm::mat4{ 1.f };
 	ubo.view = glm::lookAt(m_CameraPos, m_CameraForward, m_CameraUp);
-	ubo.proj = glm::perspective(glm::radians(m_FovAngle), m_AspectRatio, 0.1f, 10.f);
+	ubo.proj = glm::perspective(glm::radians(m_FovAngle), m_AspectRatio, 0.1f, 100.f);
 	ubo.proj[1][1] *= -1;
 
 	m_GP3D.SetUBO(ubo, 0);

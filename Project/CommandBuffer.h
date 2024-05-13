@@ -11,7 +11,7 @@ public:
 	VkCommandBuffer GetVkCommandBuffer() const;
 
 	void Reset() const;
-	void BeginRecording() const;
+	void BeginRecording(VkCommandBufferUsageFlags flags = 0) const;
 	void EndRecording() const;
 
 	void Submit(VkSubmitInfo& info) const;

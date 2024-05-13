@@ -1,3 +1,5 @@
+file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/resources" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}")
+
 # Source files
 set(SHADER_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/shaders")
 set(SHADER_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/shaders")
@@ -43,11 +45,15 @@ set(SOURCES
     "GP2_Buffer.h" "GP2_Buffer.cpp" 
     "GP2_GraphicsPipeline2D.h" "GP2_GraphicsPipeline3D.h" 
     "GP2_DescriptorPool.h" 
-    "GP2_UniformBufferObject.h")
+    "GP2_UniformBufferObject.h" "GP2_ImageBuffer.h" "GP2_ImageBuffer.cpp" "GP2_DepthBuffer.h" "GP2_DepthBuffer.cpp")
+
+set(THIRD_PARTY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/3rdParty")
+set(THIRD_PARTY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/resources")
 
 # Create the executable
 add_executable(${PROJECT_NAME} ${SOURCES} ${GLSL_SOURCE_FILES}  "vulkanbase/VulkanUtil.cpp" "labwork/Week03.cpp")
 add_dependencies(${PROJECT_NAME} Shaders)
 # Link libraries
-target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+# target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${THIRD_PARTY_DIR})
 target_link_libraries(${PROJECT_NAME} PRIVATE ${Vulkan_LIBRARIES} glfw)
