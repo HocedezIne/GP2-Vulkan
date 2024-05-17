@@ -104,7 +104,6 @@ private:
 		m_CommandPool.Initialize(device, queueFam);
 		m_CommandBuffer = m_CommandPool.CreateCommandBuffer();
 
-		//m_DepthBuffer = new GP2_DepthBuffer(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent });
 		m_DepthBuffer.Initialize(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent }, queueFam, graphicsQueue);
 
 		std::unique_ptr<GP2_Mesh<GP2_2DVertex>> m_TriangleMesh = std::make_unique<GP2_Mesh<GP2_2DVertex>>();
@@ -115,14 +114,14 @@ private:
 		m_TriangleMesh->Initialize(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent }, m_CommandBuffer, queueFam, graphicsQueue);
 		m_GP2D.AddMesh(std::move(m_TriangleMesh));
 
-		//std::unique_ptr<GP2_Mesh> m_RectMesh = std::make_unique<GP2_Mesh>();
-		//m_RectMesh->AddVertex({ 0.25f, -0.5f, 0.f }, { 1.f, 0.5f, 1.f });
-		//m_RectMesh->AddVertex({ 0.25f, -0.75f, 0.f }, { 1.f, 0.f, 0.f });
-		//m_RectMesh->AddVertex({ 0.75f, -0.5f, 0.f }, { 1.f, 1.f, 0.f });
-		//m_RectMesh->AddVertex({ 0.75f, -0.75f, 0.f }, { 1.f, 1.f, 1.f });
-		//m_RectMesh->AddIndex({ 2,1,0,3,1,2 });
-		//m_RectMesh->Initialize(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent }, m_CommandBuffer, findQueueFamilies(physicalDevice), graphicsQueue);
-		//m_GP2D.AddMesh(std::move(m_RectMesh));
+		std::unique_ptr<GP2_Mesh<GP2_2DVertex>> m_FlatRectMesh = std::make_unique<GP2_Mesh<GP2_2DVertex>>();
+		m_FlatRectMesh->AddVertex({ GP2_2DVertex{ { 0.25f, -0.5f, 0.f }, { 1.f, 0.5f, 1.f }},
+			GP2_2DVertex{ {0.25f, -0.75f, 0.f}, { 1.f, 0.f, 0.f}},
+			GP2_2DVertex{ {0.75f, -0.5f, 0.f}, { 1.f, 1.f, 0.f}},
+			GP2_2DVertex{ {0.75f, -0.75f, 0.f}, {1.f, 1.f, 1.f}} });
+		m_FlatRectMesh->AddIndex({ 2,1,0,3,1,2 });
+		m_FlatRectMesh->Initialize(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent }, m_CommandBuffer, findQueueFamilies(physicalDevice), graphicsQueue);
+		m_GP2D.AddMesh(std::move(m_FlatRectMesh));
 
 		//std::unique_ptr<GP2_Mesh> m_OvalMesh = std::make_unique<GP2_Mesh>();
 		//m_OvalMesh->AddVertex({ -0.625f, -0.625f, 0.f }, { 1.f, 1.f, 0.f }); // 0
@@ -137,19 +136,19 @@ private:
 		//m_GP2D.AddMesh(std::move(m_OvalMesh));
 
 		std::unique_ptr<GP2_Mesh<GP2_3DVertex>> m_RectMesh = std::make_unique<GP2_Mesh<GP2_3DVertex>>();
-		m_RectMesh->AddVertex({ GP2_3DVertex{{-0.5f,-0.5f,0.f}, {1.f,0.f,0.f}, {0.f,0.f}},
-			GP2_3DVertex{{0.5f,-0.5f,0.f}, {0.f,1.f,0.f}, {1.f,0.f}},
-			GP2_3DVertex{{0.5f,0.5f,0.f}, {0.f,0.f,1.f}, {1.f,1.f}},
-			GP2_3DVertex{{-0.5f,0.5f,0.f}, {1.f,1.f,1.f}, {0.f,1.f}} });
+		m_RectMesh->AddVertex({ GP2_3DVertex{{-0.5f,-0.5f,0.f}, {0.f,0.f}},
+			GP2_3DVertex{{0.5f,-0.5f,0.f}, {1.f,0.f}},
+			GP2_3DVertex{{0.5f,0.5f,0.f}, {1.f,1.f}},
+			GP2_3DVertex{{-0.5f,0.5f,0.f}, {0.f,1.f}} });
 		m_RectMesh->AddIndex({ 2,1,0,0,3,2 });
 		m_RectMesh->Initialize(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent }, m_CommandBuffer, queueFam, graphicsQueue);
 		m_GP3D.AddMesh(std::move(m_RectMesh));
 
 		m_RectMesh = std::make_unique<GP2_Mesh<GP2_3DVertex>>();
-		m_RectMesh->AddVertex({ GP2_3DVertex{{-0.5f,-0.5f,-0.5f}, {1.f,0.f,0.f}, {0.f,0.f}},
-			GP2_3DVertex{{0.5f,-0.5f,-0.5f}, {0.f,1.f,0.f}, {1.f,0.f}},
-			GP2_3DVertex{{0.5f,0.5f,-0.5f}, {0.f,0.f,1.f}, {1.f,1.f}},
-			GP2_3DVertex{{-0.5f,0.5f,-0.5f}, {1.f,1.f,1.f}, {0.f,1.f}} });
+		m_RectMesh->AddVertex({ GP2_3DVertex{{-0.5f,-0.5f,-0.5f}, {0.f,0.f}},
+			GP2_3DVertex{{0.5f,-0.5f,-0.5f}, {1.f,0.f}},
+			GP2_3DVertex{{0.5f,0.5f,-0.5f}, {1.f,1.f}},
+			GP2_3DVertex{{-0.5f,0.5f,-0.5f}, {0.f,1.f}} });
 		m_RectMesh->AddIndex({ 2,1,0,0,3,2 });
 		m_RectMesh->Initialize(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent }, m_CommandBuffer, queueFam, graphicsQueue);
 		m_GP3D.AddMesh(std::move(m_RectMesh));

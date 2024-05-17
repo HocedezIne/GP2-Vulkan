@@ -37,7 +37,6 @@ struct GP2_2DVertex {
 
 struct GP2_3DVertex {
 	glm::vec3 pos;
-	glm::vec3 color;
 	glm::vec2 texCoord;
 
 	static VkVertexInputBindingDescription GetBindingDescription()
@@ -51,8 +50,8 @@ struct GP2_3DVertex {
 		return bindingDescription;
 	}
 
-	static std::array<VkVertexInputAttributeDescription, 3> GetAttributeDescriptions() {
-		std::array<VkVertexInputAttributeDescription, 3> attributeDescriptions{};
+	static std::array<VkVertexInputAttributeDescription, 2> GetAttributeDescriptions() {
+		std::array<VkVertexInputAttributeDescription, 2> attributeDescriptions{};
 
 		attributeDescriptions[0].binding = 0;
 		attributeDescriptions[0].location = 0;
@@ -61,13 +60,8 @@ struct GP2_3DVertex {
 
 		attributeDescriptions[1].binding = 0;
 		attributeDescriptions[1].location = 1;
-		attributeDescriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT;
-		attributeDescriptions[1].offset = offsetof(GP2_3DVertex, color);
-
-		attributeDescriptions[2].binding = 0;
-		attributeDescriptions[2].location = 2;
-		attributeDescriptions[2].format = VK_FORMAT_R32G32_SFLOAT;
-		attributeDescriptions[2].offset = offsetof(GP2_3DVertex, texCoord);
+		attributeDescriptions[1].format = VK_FORMAT_R32G32_SFLOAT;
+		attributeDescriptions[1].offset = offsetof(GP2_3DVertex, texCoord);
 
 		return attributeDescriptions;
 	}
