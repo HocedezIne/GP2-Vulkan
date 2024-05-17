@@ -68,8 +68,8 @@ private:
 	void keyEvent(int key, int scancode, int action, int mods);
 	void mouseMove(GLFWwindow* window, double xpos, double ypos);
 	void mouseEvent(GLFWwindow* window, int button, int action, int mods);
-	glm::vec2 m_DragStart{ 0,0 };
-	float m_Radius{ 5.f };
+
+	glm::vec2 m_PrevMousePos{};
 
 	glm::vec3 m_CameraPos{ 0.f, 0.f, 5.f };
 	glm::vec3 m_CameraForward{0.f, 0.f, -1.f};
@@ -78,6 +78,7 @@ private:
 	float m_Yaw{ 0.f };
 	float m_Pitch{ 0.f };
 	const float m_CameraMovementSpeed{10.f};
+	const float m_MouseSensitivity{ 0.001f };
 
 	const float m_FovAngle{ 45.f };
 	const float m_AspectRatio{ swapChainExtent.width / (float)swapChainExtent.height };

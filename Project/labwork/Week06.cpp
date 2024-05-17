@@ -96,13 +96,14 @@ void VulkanBase::drawFrame() {
 	ubo.view = UpdateCamera();
 	ubo.proj = glm::perspective(glm::radians(m_FovAngle), m_AspectRatio, 0.1f, 100.f);
 	
-
 	m_GP3D.SetUBO(ubo, 0);
 	m_GP3D.Record(m_CommandBuffer, swapChainExtent, CURRENT_FRAME);
 
+	m_Yaw = 0;
+	m_Pitch = 0;
+
 	endRenderPass(m_CommandBuffer);
 
-	//drawFrame(imageIndex);
 	m_CommandBuffer.EndRecording();
 
 	VkSubmitInfo submitInfo{};

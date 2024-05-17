@@ -1,6 +1,7 @@
 #include "vulkanbase/VulkanBase.h"
 
 #include <glm/gtc/matrix_transform.hpp>
+#include <cmath>
 
 void VulkanBase::initWindow() {
 	glfwInit();
@@ -46,17 +47,18 @@ void VulkanBase::keyEvent(int key, int scancode, int action, int mods)
 
 void VulkanBase::mouseMove(GLFWwindow* window, double xpos, double ypos)
 {
+	glm::vec2 curMousePos = glm::vec2(xpos, ypos);
+	auto deltaMousePos = curMousePos - m_PrevMousePos;
+	m_PrevMousePos = curMousePos;
+
 	int leftState = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
 	if (leftState == GLFW_PRESS)
 	{
-		float dx = static_cast<float>(xpos) - m_DragStart.x;
+		m_Yaw += deltaMousePos.x * m_MouseSensitivity;
+		m_Pitch += deltaMousePos.y * m_MouseSensitivity;
 
-		if (dx > 0) {
-			m_Yaw += 0.01f;
-		}
-		else {
-			m_Pitch -= 0.01f;
-		}
+		m_Yaw = fmod(m_Yaw, glm::radians(89.f));
+		m_Pitch = fmod(m_Pitch, glm::radians(89.f));
 	}
 }
 void VulkanBase::mouseEvent(GLFWwindow* window, int button, int action, int mods)
@@ -65,9 +67,9 @@ void VulkanBase::mouseEvent(GLFWwindow* window, int button, int action, int mods
 	{
 		std::cout << "left mouse button pressed\n";
 		double xpos, ypos;
-		glfwGetCursorPos(window, &xpos, &ypos);
-		m_DragStart.x = static_cast<float>(xpos);
-		m_DragStart.y = static_cast<float>(ypos);
+		glfwGetCursorPos(window, &xpos, &ypos); 
+		m_PrevMousePos.x = static_cast<float>(xpos);
+		m_PrevMousePos.y = static_cast<float>(ypos);
 	}
 }
 
