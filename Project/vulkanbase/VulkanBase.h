@@ -25,6 +25,7 @@
 #include "GP2_Mesh.h"
 #include "GP2_GraphicsPipeline2D.h"
 #include "GP2_GraphicsPipeline3D.h"
+#include "GP2_PBRPipeline.h"
 #include "GP2_UniformBufferObject.h"
 #include "GP2_DepthBuffer.h"
 
@@ -135,34 +136,38 @@ private:
 		//m_OvalMesh->Initialize(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent }, m_CommandBuffer, findQueueFamilies(physicalDevice), graphicsQueue);
 		//m_GP2D.AddMesh(std::move(m_OvalMesh));
 
-		std::unique_ptr<GP2_Mesh<GP2_3DVertex>> m_RectMesh = std::make_unique<GP2_Mesh<GP2_3DVertex>>();
-		m_RectMesh->AddVertex({ GP2_3DVertex{{-0.5f,-0.5f,0.f}, {0.f,0.f}},
-			GP2_3DVertex{{0.5f,-0.5f,0.f}, {1.f,0.f}},
-			GP2_3DVertex{{0.5f,0.5f,0.f}, {1.f,1.f}},
-			GP2_3DVertex{{-0.5f,0.5f,0.f}, {0.f,1.f}} });
-		m_RectMesh->AddIndex({ 2,1,0,0,3,2 });
-		m_RectMesh->Initialize(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent }, m_CommandBuffer, queueFam, graphicsQueue);
-		m_GP3D.AddMesh(std::move(m_RectMesh));
+		//std::unique_ptr<GP2_Mesh<GP2_3DVertex>> m_RectMesh = std::make_unique<GP2_Mesh<GP2_3DVertex>>();
+		//m_RectMesh->AddVertex({ GP2_3DVertex{{-0.5f,-0.5f,0.f}, {0.f,0.f}},
+		//	GP2_3DVertex{{0.5f,-0.5f,0.f}, {1.f,0.f}},
+		//	GP2_3DVertex{{0.5f,0.5f,0.f}, {1.f,1.f}},
+		//	GP2_3DVertex{{-0.5f,0.5f,0.f}, {0.f,1.f}} });
+		//m_RectMesh->AddIndex({ 2,1,0,0,3,2 });
+		//m_RectMesh->Initialize(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent }, m_CommandBuffer, queueFam, graphicsQueue);
+		//m_GP3D.AddMesh(std::move(m_RectMesh));
 
-		m_RectMesh = std::make_unique<GP2_Mesh<GP2_3DVertex>>();
-		m_RectMesh->AddVertex({ GP2_3DVertex{{-0.5f,-0.5f,-0.5f}, {0.f,0.f}},
-			GP2_3DVertex{{0.5f,-0.5f,-0.5f}, {1.f,0.f}},
-			GP2_3DVertex{{0.5f,0.5f,-0.5f}, {1.f,1.f}},
-			GP2_3DVertex{{-0.5f,0.5f,-0.5f}, {0.f,1.f}} });
-		m_RectMesh->AddIndex({ 2,1,0,0,3,2 });
-		m_RectMesh->Initialize(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent }, m_CommandBuffer, queueFam, graphicsQueue);
-		m_GP3D.AddMesh(std::move(m_RectMesh));
+		//m_RectMesh = std::make_unique<GP2_Mesh<GP2_3DVertex>>();
+		//m_RectMesh->AddVertex({ GP2_3DVertex{{-0.5f,-0.5f,-0.5f}, {0.f,0.f}},
+		//	GP2_3DVertex{{0.5f,-0.5f,-0.5f}, {1.f,0.f}},
+		//	GP2_3DVertex{{0.5f,0.5f,-0.5f}, {1.f,1.f}},
+		//	GP2_3DVertex{{-0.5f,0.5f,-0.5f}, {0.f,1.f}} });
+		//m_RectMesh->AddIndex({ 2,1,0,0,3,2 });
+		//m_RectMesh->Initialize(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent }, m_CommandBuffer, queueFam, graphicsQueue);
+		//m_GP3D.AddMesh(std::move(m_RectMesh));
 
-		//std::unique_ptr<GP2_Mesh<GP2_3DVertex>> m_ParsedMesh = std::make_unique<GP2_Mesh<GP2_3DVertex>>();
-		//m_ParsedMesh->ParseOBJ("resources/vehicle.obj", true);
-		//m_ParsedMesh->Initialize(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent }, m_CommandBuffer, findQueueFamilies(physicalDevice), graphicsQueue);
-		//m_GP3D.AddMesh(std::move(m_ParsedMesh));
+		std::unique_ptr<GP2_Mesh<GP2_PBRVertex>> m_ParsedMesh = std::make_unique<GP2_Mesh<GP2_PBRVertex>>();
+		m_ParsedMesh->ParseOBJ("resources/vehicle.obj", false);
+		m_ParsedMesh->Initialize(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent }, m_CommandBuffer, findQueueFamilies(physicalDevice), graphicsQueue);
+		m_GP2_PBR.AddMesh(std::move(m_ParsedMesh));
 
 		createRenderPass();
 
 		m_GP2D.Initialize(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent }, MAX_FRAMES_IN_FLIGHT);
 		m_GP3D.Initialize(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent }, MAX_FRAMES_IN_FLIGHT,
-			"resources/murder.png", queueFam, graphicsQueue);
+			"resources/vehicle_diffuse.png", queueFam, graphicsQueue);
+
+		m_GP2_PBR.SetTextureMaps(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent }, "resources/vehicle_diffuse.png", 
+			"resources/vehicle_normal.png", queueFam, graphicsQueue);
+		m_GP2_PBR.Initialize(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent }, MAX_FRAMES_IN_FLIGHT);
 
 		createFrameBuffers();
 
@@ -197,6 +202,7 @@ private:
 
 		m_GP2D.CleanUp();
 		m_GP3D.CleanUp();
+		m_GP2_PBR.CleanUp();
 
 		vkDestroyRenderPass(device, renderPass, nullptr);
 
@@ -253,6 +259,7 @@ private:
 
 	GP2_GraphicsPipeline2D<GP2_ViewProjection, GP2_2DVertex> m_GP2D{ "shaders/shader.vert.spv", "shaders/shader.frag.spv" };
 	GP2_GraphicsPipeline3D<UniformBufferObject, GP2_3DVertex> m_GP3D{ "shaders/3Dshader.vert.spv", "shaders/3Dshader.frag.spv" };
+	GP2_PBRPipeline<UniformBufferObject, GP2_PBRVertex> m_GP2_PBR{ "shaders/PBRshader.vert.spv", "shaders/PBRshader.frag.spv" };
 
 	void createFrameBuffers();
 	void createRenderPass();

@@ -21,7 +21,7 @@ public:
 	void Destroy();
 
 private:
-	void CreateImage();
+	void CreateImage(VkFormat format);
 	void TransitionLayout(QueueFamilyIndices queueFamInd, VkQueue graphicsQueue, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout);
 	void CopyBufferToImage(VkBuffer buffer, QueueFamilyIndices queueFamInd, VkQueue graphicsQueue);
 

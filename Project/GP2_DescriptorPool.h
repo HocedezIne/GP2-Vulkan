@@ -13,13 +13,13 @@ public:
 	GP2_DescriptorPool(VkDevice device, size_t count);
 	~GP2_DescriptorPool();
 
-	void Initialize(const VulkanContext& context);
+	void Initialize(const VulkanContext& context, int imageCount = 0);
 
 	void SetUBO(UBO data, size_t index);
 
 	const VkDescriptorSetLayout& GetDescriptorSetLayout() { return m_DescriptorSetLayout; };
 
-	void CreateDescriptorSets(VkImageView imageView = VK_NULL_HANDLE, VkSampler imageSampler = VK_NULL_HANDLE);
+	void CreateDescriptorSets(std::vector<std::pair<VkImageView, VkSampler>> imageDatas = {});
 
 	void BindDescriptorSet(VkCommandBuffer cmdBuffer, VkPipelineLayout layout, size_t index);
 
@@ -28,7 +28,7 @@ private:
 	VkDeviceSize m_Size;
 	VkDescriptorSetLayout m_DescriptorSetLayout{ VK_NULL_HANDLE };
 
-	void CreateDescriptorSetLayout();
+	void CreateDescriptorSetLayout(int imageCount);
 	void CreateUBOs(const VulkanContext& context);
 
 	VkDescriptorPool m_DescriptorPool{ VK_NULL_HANDLE };
@@ -75,9 +75,9 @@ GP2_DescriptorPool<UBO>::~GP2_DescriptorPool()
 }
 
 template<class UBO>
-void GP2_DescriptorPool<UBO>::Initialize(const VulkanContext& context)
+void GP2_DescriptorPool<UBO>::Initialize(const VulkanContext& context, int imageCount)
 {
-	CreateDescriptorSetLayout();
+	CreateDescriptorSetLayout(imageCount);
 	CreateUBOs(context);
 }
 
@@ -88,7 +88,7 @@ void GP2_DescriptorPool<UBO>::SetUBO(UBO data, size_t index)
 }
 
 template<class UBO>
-void GP2_DescriptorPool<UBO>::CreateDescriptorSets(VkImageView imageView, VkSampler imageSampler)
+void GP2_DescriptorPool<UBO>::CreateDescriptorSets(std::vector<std::pair<VkImageView, VkSampler>> imageDatas)
 {
 	std::vector<VkDescriptorSetLayout> layouts(m_Count, m_DescriptorSetLayout);
 	VkDescriptorSetAllocateInfo allocInfo{};
@@ -109,14 +109,17 @@ void GP2_DescriptorPool<UBO>::CreateDescriptorSets(VkImageView imageView, VkSamp
 		bufferInfo.offset = 0;
 		bufferInfo.range = m_Size;
 
-		if (imageView != VK_NULL_HANDLE && imageSampler != VK_NULL_HANDLE)
+		if (!imageDatas.empty())
 		{
-			VkDescriptorImageInfo imageInfo{};
-			imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-			imageInfo.imageView = imageView;
-			imageInfo.sampler = imageSampler;
+			std::vector<VkDescriptorImageInfo> imageInfos(imageDatas.size());
+			for (size_t idx = 0; idx < static_cast<int>(imageDatas.size()); ++idx)
+			{
+				imageInfos[idx].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+				imageInfos[idx].imageView = imageDatas[idx].first;
+				imageInfos[idx].sampler = imageDatas[idx].second;
+			}
 
-			std::array<VkWriteDescriptorSet,2> descriptorWrites{};
+			std::vector<VkWriteDescriptorSet> descriptorWrites(imageDatas.size() + 1);
 
 			descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 			descriptorWrites[0].dstSet = m_DescriptorSets[i];
@@ -126,13 +129,16 @@ void GP2_DescriptorPool<UBO>::CreateDescriptorSets(VkImageView imageView, VkSamp
 			descriptorWrites[0].descriptorCount = 1;
 			descriptorWrites[0].pBufferInfo = &bufferInfo;
 
-			descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-			descriptorWrites[1].dstSet = m_DescriptorSets[i];
-			descriptorWrites[1].dstBinding = 1;
-			descriptorWrites[1].dstArrayElement = 0;
-			descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-			descriptorWrites[1].descriptorCount = 1;
-			descriptorWrites[1].pImageInfo = &imageInfo;
+			for (size_t idx = 0; idx < static_cast<int>(imageDatas.size()); ++idx)
+			{
+				descriptorWrites[1+idx].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+				descriptorWrites[1+idx].dstSet = m_DescriptorSets[i];
+				descriptorWrites[1+idx].dstBinding = 1 + idx;
+				descriptorWrites[1+idx].dstArrayElement = 0;
+				descriptorWrites[1+idx].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+				descriptorWrites[1+idx].descriptorCount = 1;
+				descriptorWrites[1+idx].pImageInfo = &imageInfos[idx];
+			}
 
 			vkUpdateDescriptorSets(m_Device, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
 		}
@@ -160,27 +166,28 @@ void GP2_DescriptorPool<UBO>::BindDescriptorSet(VkCommandBuffer cmdBuffer, VkPip
 }
 
 template<class UBO>
-void GP2_DescriptorPool<UBO>::CreateDescriptorSetLayout()
+void GP2_DescriptorPool<UBO>::CreateDescriptorSetLayout(int imageCount)
 {
-	VkDescriptorSetLayoutBinding uboLayoutBinding{};
-	uboLayoutBinding.binding = 0;
-	uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-	uboLayoutBinding.descriptorCount = 1;
-	uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-	uboLayoutBinding.pImmutableSamplers = nullptr;
+	std::vector<VkDescriptorSetLayoutBinding> layoutBindings(imageCount + 1);
+	layoutBindings[0].binding = 0;
+	layoutBindings[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+	layoutBindings[0].descriptorCount = 1;
+	layoutBindings[0].stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+	layoutBindings[0].pImmutableSamplers = nullptr;
 
-	VkDescriptorSetLayoutBinding samplerLayoutBinding{};
-	samplerLayoutBinding.binding = 1;
-	samplerLayoutBinding.descriptorCount = 1;
-	samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-	samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-	samplerLayoutBinding.pImmutableSamplers = nullptr;
+	for (int idx{1}; idx < imageCount+1; idx++)
+	{
+		layoutBindings[idx].binding = idx;
+		layoutBindings[idx].descriptorCount = 1;
+		layoutBindings[idx].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+		layoutBindings[idx].stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+		layoutBindings[idx].pImmutableSamplers = nullptr;
+	}
 
-	std::array<VkDescriptorSetLayoutBinding, 2> bindings = { uboLayoutBinding, samplerLayoutBinding };
 	VkDescriptorSetLayoutCreateInfo layoutInfo{};
 	layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-	layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
-	layoutInfo.pBindings = bindings.data();
+	layoutInfo.bindingCount = static_cast<uint32_t>(layoutBindings.size());
+	layoutInfo.pBindings = layoutBindings.data();
 
 	if (vkCreateDescriptorSetLayout(m_Device, &layoutInfo, nullptr, &m_DescriptorSetLayout) != VK_SUCCESS)
 	{

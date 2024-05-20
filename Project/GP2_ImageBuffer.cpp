@@ -10,7 +10,7 @@ GP2_ImageBuffer::GP2_ImageBuffer(const VulkanContext& context) :
 
 void GP2_ImageBuffer::Initialize(QueueFamilyIndices queueFamInd, VkQueue graphicsQueue, VkFormat format, VkImageAspectFlags aspectFlags)
 {
-	CreateImage();
+	CreateImage(format);
 
 	TransitionLayout(queueFamInd, graphicsQueue, format, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 	CopyBufferToImage(m_StagingBuffer->GetVkBuffer(), queueFamInd, graphicsQueue);
@@ -160,7 +160,7 @@ void GP2_ImageBuffer::LoadImageData(const std::string& filePath, const VulkanCon
 	stbi_image_free(pixels);
 }
 
-void GP2_ImageBuffer::CreateImage()
+void GP2_ImageBuffer::CreateImage(VkFormat format)
 {
 	VkImageCreateInfo imageInfo{};
 	imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
@@ -170,7 +170,7 @@ void GP2_ImageBuffer::CreateImage()
 	imageInfo.extent.depth = 1;
 	imageInfo.mipLevels = 1;
 	imageInfo.arrayLayers = 1;
-	imageInfo.format = VK_FORMAT_R8G8B8A8_SRGB;
+	imageInfo.format = format;
 	imageInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
 	imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 	imageInfo.usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
