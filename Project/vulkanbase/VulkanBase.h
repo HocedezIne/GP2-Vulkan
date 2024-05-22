@@ -78,7 +78,7 @@ private:
 	glm::vec3 m_CameraUp{ 0.f,1.f,0.f };
 	float m_Yaw{ 0.f };
 	float m_Pitch{ 0.f };
-	const float m_CameraMovementSpeed{10.f};
+	const float m_CameraMovementSpeed{25.f};
 	const float m_MouseSensitivity{ 0.001f };
 
 	const float m_FovAngle{ 45.f };
@@ -166,7 +166,7 @@ private:
 			"resources/vehicle_diffuse.png", queueFam, graphicsQueue);
 
 		m_GP2_PBR.SetTextureMaps(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent }, "resources/vehicle_diffuse.png", 
-			"resources/vehicle_normal.png", queueFam, graphicsQueue);
+			"resources/vehicle_normal.png", "resources/vehicle_roughness.png", queueFam, graphicsQueue);
 		m_GP2_PBR.Initialize(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent }, MAX_FRAMES_IN_FLIGHT);
 
 		createFrameBuffers();

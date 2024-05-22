@@ -1,5 +1,7 @@
 #version 450
 
+// ------------------ LAYOUT ------------------------------
+
 layout(push_constant)uniform PushConstants{
     mat4 model;
 } mesh;
@@ -17,9 +19,17 @@ layout(location = 3) in vec3 inTangent;
 
 layout(location = 0) out vec2 fragTexCoord;
 layout(location = 1) out vec3 fragNormal;
+layout(location = 2) out vec3 fragTangent;
+layout(location = 3) out vec3 fragViewDirection;
+
+// ------------------ MAIN ----------------------------------
 
 void main() {
     gl_Position = ubo.proj * ubo.view * mesh.model * vec4(inPosition, 1.0);
+
+    fragViewDirection = normalize(vec3(ubo.view[2][0], ubo.view[2][1], ubo.view[2][2]));
+
     fragTexCoord = inTexCoord;
     fragNormal = mat3(mesh.model) * normalize(inNormal);
+    fragTangent = mat3(mesh.model) * normalize(inTangent);
 }

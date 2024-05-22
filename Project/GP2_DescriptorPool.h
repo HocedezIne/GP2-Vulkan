@@ -10,7 +10,7 @@ template<class UBO>
 class GP2_DescriptorPool
 {
 public:
-	GP2_DescriptorPool(VkDevice device, size_t count);
+	GP2_DescriptorPool(VkDevice device, size_t count, size_t imageCount = 0);
 	~GP2_DescriptorPool();
 
 	void Initialize(const VulkanContext& context, int imageCount = 0);
@@ -41,14 +41,18 @@ private:
 };
 
 template<class UBO>
-GP2_DescriptorPool<UBO>::GP2_DescriptorPool(VkDevice device, size_t count) :
+GP2_DescriptorPool<UBO>::GP2_DescriptorPool(VkDevice device, size_t count, size_t imageCount) :
 	m_Device(device), m_Size(sizeof(UBO)), m_Count(count)
 {
-	std::array<VkDescriptorPoolSize,2> poolSizes{};
+	std::vector<VkDescriptorPoolSize> poolSizes(imageCount+1);
 	poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 	poolSizes[0].descriptorCount = static_cast<uint32_t>(m_Count);
-	poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-	poolSizes[1].descriptorCount = static_cast<uint32_t>(m_Count);
+
+	for (int idx{ 1 }; idx < imageCount + 1; ++idx)
+	{
+		poolSizes[idx].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+		poolSizes[idx].descriptorCount = static_cast<uint32_t>(m_Count);
+	}
 
 	VkDescriptorPoolCreateInfo poolInfo{};
 	poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
@@ -175,7 +179,7 @@ void GP2_DescriptorPool<UBO>::CreateDescriptorSetLayout(int imageCount)
 	layoutBindings[0].stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
 	layoutBindings[0].pImmutableSamplers = nullptr;
 
-	for (int idx{1}; idx < imageCount+1; idx++)
+	for (int idx{1}; idx < imageCount+1; ++idx)
 	{
 		layoutBindings[idx].binding = idx;
 		layoutBindings[idx].descriptorCount = 1;

@@ -15,7 +15,8 @@ public:
 	GP2_PBRPipeline(const std::string& vertexShaderFile, const std::string& fragmentShaderFile);
 	~GP2_PBRPipeline() = default;
 
-	void SetTextureMaps(const VulkanContext& context, const std::string& diffuse, const std::string& normal, QueueFamilyIndices queueFamInd, VkQueue graphicsQueue);
+	void SetTextureMaps(const VulkanContext& context, const std::string& diffuse, const std::string& normal,
+		const std::string& roughness, QueueFamilyIndices queueFamInd, VkQueue graphicsQueue);
 
 	void Initialize(const VulkanContext& context, size_t descriptorPoolCount);
 
@@ -44,6 +45,7 @@ private:
 
 	GP2_ImageBuffer* m_DiffuseMap;
 	GP2_ImageBuffer* m_NormalMap;
+	GP2_ImageBuffer* m_RoughnessMap;
 
 	GP2_DescriptorPool<UBO>* m_DescriptorPool{};
 
@@ -57,7 +59,8 @@ void GP2_PBRPipeline<UBO, Vertex>::AddMesh(std::unique_ptr<GP2_Mesh<Vertex>> mes
 }
 
 template<class UBO, class Vertex>
-inline void GP2_PBRPipeline<UBO, Vertex>::SetTextureMaps(const VulkanContext& context, const std::string& diffuse, const std::string& normal, QueueFamilyIndices queueFamInd, VkQueue graphicsQueue)
+inline void GP2_PBRPipeline<UBO, Vertex>::SetTextureMaps(const VulkanContext& context, const std::string& diffuse, const std::string& normal,
+	const std::string& roughness, QueueFamilyIndices queueFamInd, VkQueue graphicsQueue)
 {
 	m_DiffuseMap = new GP2_ImageBuffer{ context };
 	m_DiffuseMap->LoadImageData(diffuse, context);
@@ -66,6 +69,10 @@ inline void GP2_PBRPipeline<UBO, Vertex>::SetTextureMaps(const VulkanContext& co
 	m_NormalMap = new GP2_ImageBuffer{ context };
 	m_NormalMap->LoadImageData(normal, context);
 	m_NormalMap->Initialize(queueFamInd, graphicsQueue, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_ASPECT_COLOR_BIT);
+
+	m_RoughnessMap = new GP2_ImageBuffer{ context };
+	m_RoughnessMap->LoadImageData(roughness, context);
+	m_RoughnessMap->Initialize(queueFamInd, graphicsQueue, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_ASPECT_COLOR_BIT);
 }
 
 template <class UBO, class Vertex>
@@ -80,6 +87,8 @@ void GP2_PBRPipeline<UBO, Vertex>::CleanUp()
 	m_DiffuseMap = nullptr;
 	m_NormalMap->Destroy();
 	m_NormalMap = nullptr;
+	m_RoughnessMap->Destroy();
+	m_RoughnessMap = nullptr;
 
 	vkDestroyPipeline(m_Device, m_GraphicsPipeline, nullptr);
 	vkDestroyPipelineLayout(m_Device, m_PipelineLayout, nullptr);
@@ -98,7 +107,9 @@ void GP2_PBRPipeline<UBO, Vertex>::Initialize(const VulkanContext& context, size
 	std::vector<std::pair<VkImageView, VkSampler>> imageDatas;
 	imageDatas.push_back(std::make_pair(m_DiffuseMap->GetView(), m_DiffuseMap->GetSampler()));
 	imageDatas.push_back(std::make_pair(m_NormalMap->GetView(), m_NormalMap->GetSampler()));
-	m_DescriptorPool = new GP2_DescriptorPool<UBO>{ context.device, descriptorPoolCount };
+	imageDatas.push_back(std::make_pair(m_RoughnessMap->GetView(), m_RoughnessMap->GetSampler()));
+
+	m_DescriptorPool = new GP2_DescriptorPool<UBO>{ context.device, descriptorPoolCount, imageDatas.size()};
 	m_DescriptorPool->Initialize(context, imageDatas.size());
 	m_DescriptorPool->CreateDescriptorSets(imageDatas);
 
