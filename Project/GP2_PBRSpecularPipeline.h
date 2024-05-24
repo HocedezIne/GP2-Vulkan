@@ -9,14 +9,14 @@
 #include "GP2_ImageBuffer.h"
 
 template <class UBO, class Vertex>
-class GP2_PBRPipeline
+class GP2_PBRSpecularPipeline
 {
 public:
-	GP2_PBRPipeline(const std::string& vertexShaderFile, const std::string& fragmentShaderFile);
-	~GP2_PBRPipeline() = default;
+	GP2_PBRSpecularPipeline(const std::string& vertexShaderFile, const std::string& fragmentShaderFile);
+	~GP2_PBRSpecularPipeline() = default;
 
 	void SetTextureMaps(const VulkanContext& context, const std::string& diffuse, const std::string& normal,
-		const std::string& roughness, QueueFamilyIndices queueFamInd, VkQueue graphicsQueue);
+		const std::string& gloss, const std::string& specular, QueueFamilyIndices queueFamInd, VkQueue graphicsQueue);
 
 	void Initialize(const VulkanContext& context, size_t descriptorPoolCount);
 
@@ -45,7 +45,8 @@ private:
 
 	GP2_ImageBuffer* m_DiffuseMap;
 	GP2_ImageBuffer* m_NormalMap;
-	GP2_ImageBuffer* m_RoughnessMap;
+	GP2_ImageBuffer* m_GlossMap;
+	GP2_ImageBuffer* m_SpecularMap;
 
 	GP2_DescriptorPool<UBO>* m_DescriptorPool{};
 
@@ -53,14 +54,14 @@ private:
 };
 
 template <class UBO, class Vertex>
-void GP2_PBRPipeline<UBO, Vertex>::AddMesh(std::unique_ptr<GP2_Mesh<Vertex>> mesh)
+void GP2_PBRSpecularPipeline<UBO, Vertex>::AddMesh(std::unique_ptr<GP2_Mesh<Vertex>> mesh)
 {
 	m_Meshes.push_back(std::move(mesh));
 }
 
 template<class UBO, class Vertex>
-inline void GP2_PBRPipeline<UBO, Vertex>::SetTextureMaps(const VulkanContext& context, const std::string& diffuse, const std::string& normal,
-	const std::string& roughness, QueueFamilyIndices queueFamInd, VkQueue graphicsQueue)
+inline void GP2_PBRSpecularPipeline<UBO, Vertex>::SetTextureMaps(const VulkanContext& context, const std::string& diffuse, const std::string& normal,
+	const std::string& gloss, const std::string& specular, QueueFamilyIndices queueFamInd, VkQueue graphicsQueue)
 {
 	m_DiffuseMap = new GP2_ImageBuffer{ context };
 	m_DiffuseMap->LoadImageData(diffuse, context);
@@ -70,13 +71,17 @@ inline void GP2_PBRPipeline<UBO, Vertex>::SetTextureMaps(const VulkanContext& co
 	m_NormalMap->LoadImageData(normal, context);
 	m_NormalMap->Initialize(queueFamInd, graphicsQueue, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_ASPECT_COLOR_BIT);
 
-	m_RoughnessMap = new GP2_ImageBuffer{ context };
-	m_RoughnessMap->LoadImageData(roughness, context);
-	m_RoughnessMap->Initialize(queueFamInd, graphicsQueue, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_ASPECT_COLOR_BIT);
+	m_GlossMap = new GP2_ImageBuffer{ context };
+	m_GlossMap->LoadImageData(gloss, context);
+	m_GlossMap->Initialize(queueFamInd, graphicsQueue, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_ASPECT_COLOR_BIT);
+
+	m_SpecularMap = new GP2_ImageBuffer{ context };
+	m_SpecularMap->LoadImageData(specular, context);
+	m_SpecularMap->Initialize(queueFamInd, graphicsQueue, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_ASPECT_COLOR_BIT);
 }
 
 template <class UBO, class Vertex>
-void GP2_PBRPipeline<UBO, Vertex>::CleanUp()
+void GP2_PBRSpecularPipeline<UBO, Vertex>::CleanUp()
 {
 	for (auto& mesh : m_Meshes)
 	{
@@ -87,8 +92,10 @@ void GP2_PBRPipeline<UBO, Vertex>::CleanUp()
 	m_DiffuseMap = nullptr;
 	m_NormalMap->Destroy();
 	m_NormalMap = nullptr;
-	m_RoughnessMap->Destroy();
-	m_RoughnessMap = nullptr;
+	m_GlossMap->Destroy();
+	m_GlossMap = nullptr;
+	m_SpecularMap->Destroy();
+	m_SpecularMap = nullptr;
 
 	vkDestroyPipeline(m_Device, m_GraphicsPipeline, nullptr);
 	vkDestroyPipelineLayout(m_Device, m_PipelineLayout, nullptr);
@@ -97,7 +104,7 @@ void GP2_PBRPipeline<UBO, Vertex>::CleanUp()
 }
 
 template <class UBO, class Vertex>
-void GP2_PBRPipeline<UBO, Vertex>::Initialize(const VulkanContext& context, size_t descriptorPoolCount)
+void GP2_PBRSpecularPipeline<UBO, Vertex>::Initialize(const VulkanContext& context, size_t descriptorPoolCount)
 {
 	m_Device = context.device;
 	m_RenderPass = context.renderPass;
@@ -107,7 +114,8 @@ void GP2_PBRPipeline<UBO, Vertex>::Initialize(const VulkanContext& context, size
 	std::vector<std::pair<VkImageView, VkSampler>> imageDatas;
 	imageDatas.push_back(std::make_pair(m_DiffuseMap->GetView(), m_DiffuseMap->GetSampler()));
 	imageDatas.push_back(std::make_pair(m_NormalMap->GetView(), m_NormalMap->GetSampler()));
-	imageDatas.push_back(std::make_pair(m_RoughnessMap->GetView(), m_RoughnessMap->GetSampler()));
+	imageDatas.push_back(std::make_pair(m_GlossMap->GetView(), m_GlossMap->GetSampler()));
+	imageDatas.push_back(std::make_pair(m_SpecularMap->GetView(), m_SpecularMap->GetSampler()));
 
 	m_DescriptorPool = new GP2_DescriptorPool<UBO>{ context.device, descriptorPoolCount, imageDatas.size()};
 	m_DescriptorPool->Initialize(context, imageDatas.size());
@@ -117,14 +125,14 @@ void GP2_PBRPipeline<UBO, Vertex>::Initialize(const VulkanContext& context, size
 }
 
 template <class UBO, class Vertex>
-GP2_PBRPipeline<UBO, Vertex>::GP2_PBRPipeline(const std::string& vertexShaderFile, const std::string& fragmentShaderFile) :
+GP2_PBRSpecularPipeline<UBO, Vertex>::GP2_PBRSpecularPipeline(const std::string& vertexShaderFile, const std::string& fragmentShaderFile) :
 	m_Shader{ vertexShaderFile, fragmentShaderFile }
 {
 
 }
 
 template <class UBO, class Vertex>
-VkPushConstantRange GP2_PBRPipeline<UBO, Vertex>::CreatePushConstantRange()
+VkPushConstantRange GP2_PBRSpecularPipeline<UBO, Vertex>::CreatePushConstantRange()
 {
 	VkPushConstantRange pushConstantRange{};
 	pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
@@ -135,7 +143,7 @@ VkPushConstantRange GP2_PBRPipeline<UBO, Vertex>::CreatePushConstantRange()
 }
 
 template <class UBO, class Vertex>
-void GP2_PBRPipeline<UBO, Vertex>::CreateGraphicsPipeline()
+void GP2_PBRSpecularPipeline<UBO, Vertex>::CreateGraphicsPipeline()
 {
 	VkPipelineViewportStateCreateInfo viewportState{};
 	viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
@@ -236,7 +244,7 @@ void GP2_PBRPipeline<UBO, Vertex>::CreateGraphicsPipeline()
 }
 
 template <class UBO, class Vertex>
-void GP2_PBRPipeline<UBO, Vertex>::DrawScene(const GP2_CommandBuffer& cmdBuffer)
+void GP2_PBRSpecularPipeline<UBO, Vertex>::DrawScene(const GP2_CommandBuffer& cmdBuffer)
 {
 	for (auto& mesh : m_Meshes)
 	{
@@ -245,7 +253,7 @@ void GP2_PBRPipeline<UBO, Vertex>::DrawScene(const GP2_CommandBuffer& cmdBuffer)
 }
 
 template <class UBO, class Vertex>
-void GP2_PBRPipeline<UBO, Vertex>::Record(const GP2_CommandBuffer& cmdBuffer, VkExtent2D extent, int imageIndex)
+void GP2_PBRSpecularPipeline<UBO, Vertex>::Record(const GP2_CommandBuffer& cmdBuffer, VkExtent2D extent, int imageIndex)
 {
 	vkCmdBindPipeline(cmdBuffer.GetVkCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, m_GraphicsPipeline);
 
@@ -269,7 +277,7 @@ void GP2_PBRPipeline<UBO, Vertex>::Record(const GP2_CommandBuffer& cmdBuffer, Vk
 }
 
 template <class UBO, class Vertex>
-void GP2_PBRPipeline<UBO, Vertex>::SetUBO(UBO ubo, size_t uboIndex)
+void GP2_PBRSpecularPipeline<UBO, Vertex>::SetUBO(UBO ubo, size_t uboIndex)
 {
 	m_DescriptorPool->SetUBO(ubo, uboIndex);
 }
