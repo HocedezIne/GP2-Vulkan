@@ -15,15 +15,15 @@ layout(location = 0) out vec4 outColor;
 
 // ------------------ HELPERS ------------------------------
 
-vec4 Lambert(vec4 kd, vec4 cd)
+vec3 Lambert(vec3 kd, vec3 cd)
 {
 	return (cd * kd) / 3.14159265358979323846f ;
 }
 
-vec4 FresnelFunction_Schlick(vec3 h, vec3 v, vec4 f0)
+vec3 FresnelFunction_Schlick(vec3 h, vec3 v, vec3 f0)
 {
 	const float schlick = 1 - dot(h,v);
-	return f0 + (vec4(1,1,1, 0) - f0) * (schlick * schlick * schlick * schlick * schlick);
+	return f0 + (1.f - f0) * pow(schlick, 5);
 }
 
 float NormalDistribution_GGX(vec3 n, const vec3 h, float roughness)
@@ -50,36 +50,39 @@ float GeometryFunction_Smith(vec3 n, vec3 v, vec3 l, float roughness)
 
 void main() {
 	// values from maps + light direction
-    vec4 diffuseMap = texture(diffuseSampler, fragTexCoord);
-    vec4 normalMap = texture(normalSampler, fragTexCoord);
-    vec4 roughnessMap = texture(roughnessSampler, fragTexCoord);
-	const vec3 lightDirection = vec3(0.577f, -0.577, 0.577f);
+    vec3 albedo = texture(diffuseSampler, fragTexCoord).rgb;
+    vec3 normalMap = texture(normalSampler, fragTexCoord).rgb;
+    float roughnessMapValue = texture(roughnessSampler, fragTexCoord).x;
+	const vec3 lightDirection = vec3(0.577f, 0.577, 0.577f);
+	const vec3 radiance = vec3(7.f,7.f,7.f);
 
 	// calculate normals
 	const vec3 binormal = cross(fragNormal, fragTangent);
 	const mat3 tangentSpaceAxis = mat3(fragTangent, binormal, fragNormal);
-	vec3 normal = (2.f * vec3(normalMap) - vec3(1.f,1.f,1.f));
+	vec3 normal = 2.f * normalMap - 1.f;
 	normal = tangentSpaceAxis * normal;
 
 	const float observedArea = dot(normal, lightDirection);
 	if( observedArea <= 0.f) outColor = vec4(0.f,0.f,0.f,0.f);
 	else 
 	{
-		const vec4 f0 = (abs(roughnessMap.x-0) <  1.19209290e-07f) ? vec4(0.04f, 0.04f, 0.04f, 1.f) : diffuseMap;
+		const vec3 f0 = (abs(roughnessMapValue-0) <  1.19209290e-07f) ? vec3(0.04f, 0.04f, 0.04f) : albedo;
 
 		const vec3 h = normalize(fragViewDirection + lightDirection);
 
-		const vec4 F = FresnelFunction_Schlick(h, fragViewDirection, f0);
-		const float D = NormalDistribution_GGX(normal, h, roughnessMap.x*roughnessMap.x);
-		const float G = GeometryFunction_Smith(normal, fragViewDirection, lightDirection, roughnessMap.x*roughnessMap.x);
+		const vec3 F = FresnelFunction_Schlick(h, fragViewDirection, f0);
+		const float D = NormalDistribution_GGX(normal, h, roughnessMapValue*roughnessMapValue);
+		const float G = GeometryFunction_Smith(normal, fragViewDirection, lightDirection, roughnessMapValue*roughnessMapValue);
 
 		const float divisor = 4 * dot(fragViewDirection, normal) * dot(lightDirection, normal);
-		vec4 specular = D*F*G;
+		vec3 specular = D*F*G;
 		specular /= divisor;
 
-		const vec4 kd = (abs(roughnessMap.x-0) <  1.19209290e-07f) ? vec4( 1.f,1.f,1.f, 1.f ) - F : vec4( 0.f,0.f,0.f, 0.f );
-		const vec4 diffuse = Lambert(kd, diffuseMap);
+		const vec3 kd = (abs(roughnessMapValue-0) <  1.19209290e-07f) ? 1.f - F : vec3(0.f);
+		const vec3 diffuse = Lambert(kd, albedo);
 
-		outColor = vec4(observedArea, observedArea, observedArea, 1.f);
+		outColor = vec4(radiance * (diffuse + specular) * observedArea, 1.f);
+
+		//outColor = vec4(albedo.r, normal.b, roughnessMapValue, 1.f);
 	}
 }

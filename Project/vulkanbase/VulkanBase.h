@@ -157,7 +157,7 @@ private:
 		std::unique_ptr<GP2_Mesh<GP2_PBRVertex>> m_ParsedMesh = std::make_unique<GP2_Mesh<GP2_PBRVertex>>();
 		m_ParsedMesh->ParseOBJ("resources/vehicle.obj", false);
 		m_ParsedMesh->Initialize(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent }, m_CommandBuffer, findQueueFamilies(physicalDevice), graphicsQueue);
-		m_GP2_PBR.AddMesh(std::move(m_ParsedMesh));
+		m_VehiclePBR.AddMesh(std::move(m_ParsedMesh));
 
 		createRenderPass();
 
@@ -165,9 +165,9 @@ private:
 		m_GP3D.Initialize(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent }, MAX_FRAMES_IN_FLIGHT,
 			"resources/vehicle_diffuse.png", queueFam, graphicsQueue);
 
-		m_GP2_PBR.SetTextureMaps(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent }, "resources/vehicle_diffuse.png", 
+		m_VehiclePBR.SetTextureMaps(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent }, "resources/vehicle_diffuse.png", 
 			"resources/vehicle_normal.png", "resources/vehicle_roughness.png", queueFam, graphicsQueue);
-		m_GP2_PBR.Initialize(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent }, MAX_FRAMES_IN_FLIGHT);
+		m_VehiclePBR.Initialize(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent }, MAX_FRAMES_IN_FLIGHT);
 
 		createFrameBuffers();
 
@@ -202,7 +202,7 @@ private:
 
 		m_GP2D.CleanUp();
 		m_GP3D.CleanUp();
-		m_GP2_PBR.CleanUp();
+		m_VehiclePBR.CleanUp();
 
 		vkDestroyRenderPass(device, renderPass, nullptr);
 
@@ -259,7 +259,7 @@ private:
 
 	GP2_GraphicsPipeline2D<GP2_ViewProjection, GP2_2DVertex> m_GP2D{ "shaders/shader.vert.spv", "shaders/shader.frag.spv" };
 	GP2_GraphicsPipeline3D<UniformBufferObject, GP2_3DVertex> m_GP3D{ "shaders/3Dshader.vert.spv", "shaders/3Dshader.frag.spv" };
-	GP2_PBRPipeline<UniformBufferObject, GP2_PBRVertex> m_GP2_PBR{ "shaders/PBRshader.vert.spv", "shaders/PBRshader.frag.spv" };
+	GP2_PBRPipeline<UniformBufferObject, GP2_PBRVertex> m_VehiclePBR{ "shaders/PBRshader.vert.spv", "shaders/PBRshader.frag.spv" };
 
 	void createFrameBuffers();
 	void createRenderPass();
