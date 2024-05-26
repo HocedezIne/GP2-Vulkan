@@ -24,6 +24,8 @@ public:
 	void AddIndex(uint16_t index);
 	void AddIndex(std::vector<uint16_t> indices);
 
+	void SetVertexConstant(glm::mat4 data) { m_VertexConstant.model = data; };
+
 	bool ParseOBJ(const std::string& filename, bool flipAxisAndWinding = true);
 
 private:	

@@ -55,7 +55,7 @@ void VulkanBase::beginRenderPass(const GP2_CommandBuffer& cmdBuffer, VkFramebuff
 	renderPassInfo.renderArea.extent = extent;
 
 	std::array<VkClearValue,2> clearValues{};
-	clearValues[0].color = { {0.f, 0.f, 0.f, 1.f} };
+	clearValues[0].color = { {0.5f, 0.5f, 0.5f, 1.f} };
 	clearValues[1].depthStencil = { 1.f, 0 };
 	renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
 	renderPassInfo.pClearValues = clearValues.data();
@@ -95,13 +95,16 @@ void VulkanBase::drawFrame() {
 	UniformBufferObject ubo{};
 	ubo.view = UpdateCamera();
 	ubo.proj = glm::perspective(glm::radians(m_FovAngle), m_AspectRatio, 0.1f, 100.f);
-	
+	ubo.proj[1][1] *= -1;
+
 	m_GP3D.SetUBO(ubo, 0);
 	m_GP3D.Record(m_CommandBuffer, swapChainExtent, CURRENT_FRAME);
 
-	ubo.proj[1][1] *= -1;
-	m_VehiclePBR.SetUBO(ubo, 0);
-	m_VehiclePBR.Record(m_CommandBuffer, swapChainExtent, CURRENT_FRAME);
+	//m_VehiclePBR.SetUBO(ubo, 0);
+	//m_VehiclePBR.Record(m_CommandBuffer, swapChainExtent, CURRENT_FRAME);
+
+	m_CopperPBR.SetUBO(ubo, 0);
+	m_CopperPBR.Record(m_CommandBuffer, swapChainExtent, CURRENT_FRAME);
 
 	m_Yaw = 0;
 	m_Pitch = 0;

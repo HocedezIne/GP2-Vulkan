@@ -58,6 +58,6 @@ void main() {
 	vec3 lambert = Lambert(radiance, albedo);
 	vec3 phong = Phong(lightDirection, specularValue, glossValue * 25.f, -fragViewDirection, normal);
 
-	//outColor = vec4( (lambert + phong + vec3(0.03f, 0.03f, 0.03f)) * observedArea, 1.f);
-	outColor = vec4((lambert+phong)*observedArea, 1.f);
+	outColor = vec4( (lambert + phong + vec3(0.03f, 0.03f, 0.03f)) * observedArea, 1.f);
+	//outColor = vec4((lambert+phong)*observedArea, 1.f);
 }
