@@ -46,8 +46,8 @@ void VulkanBase::keyEvent(int key, int scancode, int action, int mods)
 
 	if (key == GLFW_KEY_F3 && action == GLFW_PRESS)
 	{
-		//m_AluminiumPBR.CycleRenderMode();
-		//m_GorePBR.CycleRenderMode();
+		m_AluminiumPBR.CycleRenderMode();
+		m_GorePBR.CycleRenderMode();
 	}
 }
 

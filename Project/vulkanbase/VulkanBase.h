@@ -23,7 +23,8 @@
 #include "GP2_GraphicsPipeline2D.h"
 #include "GP2_GraphicsPipeline3D.h"
 #include "GP2_PBRSpecularPipeline.h"
-//#include "GP2_PBRMetalnessPipeline.h"
+//#include "GP2_PBRBasePipeline.h"
+#include "GP2_PBRMetalnessPipeline.h"
 #include "GP2_UniformBufferObject.h"
 #include "GP2_DepthBuffer.h"
 
@@ -157,21 +158,21 @@ private:
 		m_ParsedMesh->Initialize(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent }, m_CommandBuffer, findQueueFamilies(physicalDevice), graphicsQueue);
 		m_VehiclePBR.AddMesh(std::move(m_ParsedMesh));
 
-		//m_ParsedMesh = std::make_unique<GP2_Mesh<GP2_PBRVertex>>();
-		//m_ParsedMesh->ParseOBJ("resources/sphere.obj", true);
-		//m_ParsedMesh->Initialize(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent }, m_CommandBuffer, findQueueFamilies(physicalDevice), graphicsQueue);
-		//auto model = glm::translate(glm::mat4{ 1.f }, glm::vec3{ -10.f, 15.f, 0.f });
-		//model = glm::scale(model, glm::vec3(0.5f, 0.5f, 0.5f));
-		//m_ParsedMesh->SetVertexConstant(model);
-		//m_AluminiumPBR.AddMesh(std::move(m_ParsedMesh));
+		m_ParsedMesh = std::make_unique<GP2_Mesh<GP2_PBRVertex>>();
+		m_ParsedMesh->ParseOBJ("resources/sphere.obj", true);
+		m_ParsedMesh->Initialize(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent }, m_CommandBuffer, findQueueFamilies(physicalDevice), graphicsQueue);
+		auto model = glm::translate(glm::mat4{ 1.f }, glm::vec3{ -10.f, 15.f, 0.f });
+		model = glm::scale(model, glm::vec3(0.5f, 0.5f, 0.5f));
+		m_ParsedMesh->SetVertexConstant(model);
+		m_AluminiumPBR.AddMesh(std::move(m_ParsedMesh));
 
-		//m_ParsedMesh = std::make_unique<GP2_Mesh<GP2_PBRVertex>>();
-		//m_ParsedMesh->ParseOBJ("resources/sphere.obj", true);
-		//m_ParsedMesh->Initialize(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent }, m_CommandBuffer, findQueueFamilies(physicalDevice), graphicsQueue);
-		//model = glm::translate(glm::mat4{ 1.f }, glm::vec3{ 10.f, 15.f, 0.f });
-		//model = glm::scale(model, glm::vec3(0.5f, 0.5f, 0.5f));
-		//m_ParsedMesh->SetVertexConstant(model);
-		//m_GorePBR.AddMesh(std::move(m_ParsedMesh));
+		m_ParsedMesh = std::make_unique<GP2_Mesh<GP2_PBRVertex>>();
+		m_ParsedMesh->ParseOBJ("resources/sphere.obj", true);
+		m_ParsedMesh->Initialize(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent }, m_CommandBuffer, findQueueFamilies(physicalDevice), graphicsQueue);
+		model = glm::translate(glm::mat4{ 1.f }, glm::vec3{ 10.f, 15.f, 0.f });
+		model = glm::scale(model, glm::vec3(0.5f, 0.5f, 0.5f));
+		m_ParsedMesh->SetVertexConstant(model);
+		m_GorePBR.AddMesh(std::move(m_ParsedMesh));
 
 		createRenderPass();
 
@@ -183,13 +184,13 @@ private:
 			"resources/vehicle_normal.png", "resources/vehicle_gloss.png", "resources/vehicle_specular.png", queueFam, graphicsQueue);
 		m_VehiclePBR.Initialize(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent }, MAX_FRAMES_IN_FLIGHT);
 
-		//m_AluminiumPBR.SetTextureMaps(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent }, "resources/TCom_ScratchedAluminium_Old_1K_albedo.png",
-		//	"resources/TCom_ScratchedAluminium_Old_1K_normal.png", "resources/TCom_ScratchedAluminium_Old_1K_metallic.png", "resources/TCom_ScratchedAluminium_Old_1K_roughness.png", queueFam, graphicsQueue);
-		//m_AluminiumPBR.Initialize(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent }, MAX_FRAMES_IN_FLIGHT);
+		m_AluminiumPBR.SetTextureMaps(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent }, "resources/TCom_ScratchedAluminium_Old_1K_albedo.png",
+			"resources/TCom_ScratchedAluminium_Old_1K_normal.png", "resources/TCom_ScratchedAluminium_Old_1K_metallic.png", "resources/TCom_ScratchedAluminium_Old_1K_roughness.png", queueFam, graphicsQueue);
+		m_AluminiumPBR.Initialize(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent }, MAX_FRAMES_IN_FLIGHT);
 
-		//m_GorePBR.SetTextureMaps(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent }, "resources/TCom_Gore_1K_albedo.png",
-		//	"resources/TCom_Gore_1K_normal.png", "resources/TCom_Gore_1K_metalness.png", "resources/TCom_Gore_1K_roughness.png", queueFam, graphicsQueue);
-		//m_GorePBR.Initialize(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent }, MAX_FRAMES_IN_FLIGHT);
+		m_GorePBR.SetTextureMaps(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent }, "resources/TCom_Gore_1K_albedo.png",
+			"resources/TCom_Gore_1K_normal.png", "resources/TCom_Gore_1K_metalness.png", "resources/TCom_Gore_1K_roughness.png", queueFam, graphicsQueue);
+		m_GorePBR.Initialize(VulkanContext{ device, physicalDevice, renderPass, swapChainExtent }, MAX_FRAMES_IN_FLIGHT);
 
 		createFrameBuffers();
 
@@ -225,8 +226,8 @@ private:
 		m_GP2D.CleanUp();
 		m_GP3D.CleanUp();
 		m_VehiclePBR.CleanUp();
-		//m_AluminiumPBR.CleanUp();
-		//m_GorePBR.CleanUp();
+		m_AluminiumPBR.CleanUp();
+		m_GorePBR.CleanUp();
 
 		vkDestroyRenderPass(device, renderPass, nullptr);
 
@@ -284,8 +285,8 @@ private:
 	GP2_GraphicsPipeline2D<GP2_ViewProjection, GP2_2DVertex> m_GP2D{ "shaders/shader.vert.spv", "shaders/shader.frag.spv" };
 	GP2_GraphicsPipeline3D<UniformBufferObject, GP2_3DVertex> m_GP3D{ "shaders/3Dshader.vert.spv", "shaders/3Dshader.frag.spv" };
 	GP2_PBRSpecularPipeline<UniformBufferObject, GP2_PBRVertex> m_VehiclePBR{ "shaders/PBRSpecularShader.vert.spv", "shaders/PBRSpecularShader.frag.spv" };
-	//GP2_PBRMetalnessPipeline<UniformBufferObject, GP2_PBRVertex> m_AluminiumPBR{ "shaders/PBRMetallicShader.vert.spv", "shaders/PBRMetallicShader.frag.spv" };
-	//GP2_PBRMetalnessPipeline<UniformBufferObject, GP2_PBRVertex> m_GorePBR{ "shaders/PBRMetallicShader.vert.spv", "shaders/PBRMetallicShader.frag.spv" };
+	GP2_PBRMetalnessPipeline<UniformBufferObject, GP2_PBRVertex> m_AluminiumPBR{ "shaders/PBRMetallicShader.vert.spv", "shaders/PBRMetallicShader.frag.spv" };
+	GP2_PBRMetalnessPipeline<UniformBufferObject, GP2_PBRVertex> m_GorePBR{ "shaders/PBRMetallicShader.vert.spv", "shaders/PBRMetallicShader.frag.spv" };
 
 	void createFrameBuffers();
 	void createRenderPass();

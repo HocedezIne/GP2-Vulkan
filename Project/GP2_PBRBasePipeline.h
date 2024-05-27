@@ -23,6 +23,9 @@ public:
 	GP2_PBRBasePipeline(const std::string& vertexShaderFile, const std::string& fragmentShaderFile);
 	virtual ~GP2_PBRBasePipeline() = default;
 
+	virtual void Initialize(const VulkanContext& context);
+	virtual void CleanUp();
+
 	void Record(const GP2_CommandBuffer& cmdBuffer, VkExtent2D extent, int imageIndex);
 	void DrawScene(const GP2_CommandBuffer& cmdBuffer);
 
@@ -30,12 +33,12 @@ public:
 
 	void SetUBO(UBO ubo, size_t uboIndex);
 
-	void CycleRenderMode() m_RenderMode = static_cast<GP2_PBRRenderModes>((int(m_RenderMode) + 1) % 4);
+	void CycleRenderMode() { m_RenderMode = static_cast<GP2_PBRRenderModes>((int(m_RenderMode) + 1) % 4); };
+
+protected:
+	GP2_DescriptorPool<UBO>* m_DescriptorPool{ nullptr };
 
 private: 
-	virtual void Initialize(const VulkanContext& context);
-	virtual void CleanUp();
-
 	void CreateGraphicsPipeline();
 
 	static std::vector<VkPushConstantRange> CreatePushConstantRange();
@@ -49,15 +52,13 @@ private:
 
 	GP2_Shader<Vertex> m_Shader;
 
-	GP2_DescriptorPool<UBO>* m_DescriptorPool{nullptr};
-
 	std::vector<std::unique_ptr<GP2_Mesh<Vertex>>> m_Meshes{};
 
 	GP2_PBRRenderModes m_RenderMode{ GP2_PBRRenderModes::Combined };
 };
 
 template <class UBO, class Vertex>
-GP2_PBRBasePipeline<UBO, Vertex>::GP2_PBRMetalnessPipeline(const std::string& vertexShaderFile, const std::string& fragmentShaderFile) :
+GP2_PBRBasePipeline<UBO, Vertex>::GP2_PBRBasePipeline(const std::string& vertexShaderFile, const std::string& fragmentShaderFile) :
 	m_Shader{ vertexShaderFile, fragmentShaderFile }
 { }
 

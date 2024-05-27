@@ -13,7 +13,7 @@ public:
 	GP2_DescriptorPool(VkDevice device, size_t count, size_t imageCount = 0);
 	~GP2_DescriptorPool();
 
-	void Initialize(const VulkanContext& context, int imageCount = 0);
+	void Initialize(const VulkanContext& context, size_t imageCount = 0);
 
 	void SetUBO(UBO data, size_t index);
 
@@ -28,7 +28,7 @@ private:
 	VkDeviceSize m_Size;
 	VkDescriptorSetLayout m_DescriptorSetLayout{ VK_NULL_HANDLE };
 
-	void CreateDescriptorSetLayout(int imageCount);
+	void CreateDescriptorSetLayout(size_t imageCount);
 	void CreateUBOs(const VulkanContext& context);
 
 	VkDescriptorPool m_DescriptorPool{ VK_NULL_HANDLE };
@@ -79,7 +79,7 @@ GP2_DescriptorPool<UBO>::~GP2_DescriptorPool()
 }
 
 template<class UBO>
-void GP2_DescriptorPool<UBO>::Initialize(const VulkanContext& context, int imageCount)
+void GP2_DescriptorPool<UBO>::Initialize(const VulkanContext& context, size_t imageCount)
 {
 	CreateDescriptorSetLayout(imageCount);
 	CreateUBOs(context);
@@ -137,7 +137,7 @@ void GP2_DescriptorPool<UBO>::CreateDescriptorSets(std::vector<std::pair<VkImage
 			{
 				descriptorWrites[1+idx].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 				descriptorWrites[1+idx].dstSet = m_DescriptorSets[i];
-				descriptorWrites[1+idx].dstBinding = 1 + idx;
+				descriptorWrites[1+idx].dstBinding = static_cast<uint32_t>(1 + idx);
 				descriptorWrites[1+idx].dstArrayElement = 0;
 				descriptorWrites[1+idx].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 				descriptorWrites[1+idx].descriptorCount = 1;
@@ -170,7 +170,7 @@ void GP2_DescriptorPool<UBO>::BindDescriptorSet(VkCommandBuffer cmdBuffer, VkPip
 }
 
 template<class UBO>
-void GP2_DescriptorPool<UBO>::CreateDescriptorSetLayout(int imageCount)
+void GP2_DescriptorPool<UBO>::CreateDescriptorSetLayout(size_t imageCount)
 {
 	std::vector<VkDescriptorSetLayoutBinding> layoutBindings(imageCount + 1);
 	layoutBindings[0].binding = 0;

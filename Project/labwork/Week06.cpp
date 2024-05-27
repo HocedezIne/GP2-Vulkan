@@ -103,10 +103,10 @@ void VulkanBase::drawFrame() {
 	m_VehiclePBR.SetUBO(ubo, 0);
 	m_VehiclePBR.Record(m_CommandBuffer, swapChainExtent, CURRENT_FRAME);
 
-	//m_AluminiumPBR.SetUBO(ubo, 0);
-	//m_AluminiumPBR.Record(m_CommandBuffer, swapChainExtent, CURRENT_FRAME);
-	//m_GorePBR.SetUBO(ubo, 0);
-	//m_GorePBR.Record(m_CommandBuffer, swapChainExtent, CURRENT_FRAME);
+	m_AluminiumPBR.SetUBO(ubo, 0);
+	m_AluminiumPBR.Record(m_CommandBuffer, swapChainExtent, CURRENT_FRAME);
+	m_GorePBR.SetUBO(ubo, 0);
+	m_GorePBR.Record(m_CommandBuffer, swapChainExtent, CURRENT_FRAME);
 
 	m_Yaw = 0;
 	m_Pitch = 0;
