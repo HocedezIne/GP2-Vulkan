@@ -23,7 +23,6 @@
 #include "GP2_GraphicsPipeline2D.h"
 #include "GP2_GraphicsPipeline3D.h"
 #include "GP2_PBRSpecularPipeline.h"
-//#include "GP2_PBRBasePipeline.h"
 #include "GP2_PBRMetalnessPipeline.h"
 #include "GP2_UniformBufferObject.h"
 #include "GP2_DepthBuffer.h"

@@ -40,12 +40,14 @@ void VulkanBase::keyEvent(int key, int scancode, int action, int mods)
 		m_CameraPos += m_CameraRight * m_CameraMovementSpeed;
 
 	if (key == GLFW_KEY_Q && (action == GLFW_REPEAT || action == GLFW_PRESS))
-		m_CameraPos -= m_CameraUp * m_CameraMovementSpeed * 10.f;
+		m_CameraPos -= m_CameraUp * m_CameraMovementSpeed * 20.f;
 	if (key == GLFW_KEY_E && (action == GLFW_REPEAT || action == GLFW_PRESS))
-		m_CameraPos += m_CameraUp * m_CameraMovementSpeed * 10.f;
+		m_CameraPos += m_CameraUp * m_CameraMovementSpeed * 20.f;
 
 	if (key == GLFW_KEY_F3 && action == GLFW_PRESS)
 	{
+		m_VehiclePBR.CycleRenderMode();
+
 		m_AluminiumPBR.CycleRenderMode();
 		m_GorePBR.CycleRenderMode();
 	}

@@ -27,7 +27,6 @@ public:
 	virtual void CleanUp();
 
 	void Record(const GP2_CommandBuffer& cmdBuffer, VkExtent2D extent, int imageIndex);
-	void DrawScene(const GP2_CommandBuffer& cmdBuffer);
 
 	void AddMesh(std::unique_ptr<GP2_Mesh<Vertex>> mesh);
 
@@ -39,6 +38,7 @@ protected:
 	GP2_DescriptorPool<UBO>* m_DescriptorPool{ nullptr };
 
 private: 
+	void DrawScene(const GP2_CommandBuffer& cmdBuffer);
 	void CreateGraphicsPipeline();
 
 	static std::vector<VkPushConstantRange> CreatePushConstantRange();

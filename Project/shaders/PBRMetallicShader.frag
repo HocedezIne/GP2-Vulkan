@@ -56,7 +56,6 @@ float GeometryFunction_Smith(vec3 n, vec3 v, vec3 l, float roughness)
 void main() {
 	// values from maps + light direction
     vec3 albedo = texture(diffuseSampler, fragTexCoord).rgb;
-
 	if(rendermode.mode == 1)
 	{
 		outColor = vec4(albedo, 1.f);
@@ -94,7 +93,7 @@ void main() {
 	const vec3 h = normalize(fragViewDirection + lightDirection);
 
 	const vec3 F = FresnelFunction_Schlick(h, fragViewDirection, f0);
-	const float D = NormalDistribution_GGX(normal, h, roughnessValue * roughnessValue);
+	const float D = NormalDistribution_GGX(normal, h, roughnessValue*roughnessValue);
 	const float G = GeometryFunction_Smith(normal, fragViewDirection, lightDirection, roughnessValue*roughnessValue);
 
 	const float divisor = 4* dot(fragViewDirection, normal) * dot(lightDirection, normal);

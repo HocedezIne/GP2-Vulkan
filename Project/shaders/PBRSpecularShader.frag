@@ -2,6 +2,10 @@
 
 // ------------------ LAYOUT ------------------------------
 
+layout(push_constant)uniform PushConstants{
+    layout(offset=64) int mode;
+} rendermode;
+
 layout(binding = 1) uniform sampler2D diffuseSampler;
 layout(binding = 2) uniform sampler2D normalSampler;
 layout(binding = 3) uniform sampler2D glossSampler;
@@ -35,18 +39,30 @@ vec3 Phong(vec3 lightDir, float reflection, float exponent, vec3 v, vec3 n)
 void main() {
 	// values from maps + light direction
     vec3 albedo = texture(diffuseSampler, fragTexCoord).rgb;
+	if(rendermode.mode == 1)
+	{
+		outColor = vec4(albedo, 1.f);
+		return;
+	}
+
     vec3 normalMap = texture(normalSampler, fragTexCoord).rgb;
     float glossValue = texture(glossSampler, fragTexCoord).x;
     float specularValue = texture(specularSampler, fragTexCoord).x;
-
-	const vec3 lightDirection = vec3(0.577f, 0.577, 0.577f);
-	const vec3 radiance = vec3(7.f,7.f,7.f);
 
 	// calculate normals
 	const vec3 binormal = cross(fragNormal, fragTangent);
 	const mat3 tangentSpaceAxis = mat3(fragTangent, binormal, fragNormal);
 	vec3 normal = 2.f * normalMap - 1.f;
 	normal = normalize(tangentSpaceAxis * normal);
+
+	if(rendermode.mode == 2)
+	{
+		outColor = vec4(normal, 1.f);
+		return;
+	}
+
+	const vec3 lightDirection = vec3(0.577f, 0.577, 0.577f);
+	const vec3 radiance = vec3(7.f,7.f,7.f);
 
 	const float observedArea = dot(normal, lightDirection);
 	if( observedArea <= 0.f) 
@@ -55,9 +71,14 @@ void main() {
 		return;
 	}
 
-	vec3 lambert = Lambert(radiance, albedo);
 	vec3 phong = Phong(lightDirection, specularValue, glossValue * 25.f, -fragViewDirection, normal);
+	if(rendermode.mode == 3)
+	{
+		outColor = vec4(phong, 1.f);
+		return;
+	}
+
+	vec3 lambert = Lambert(radiance, albedo);
 
 	outColor = vec4( (lambert + phong + vec3(0.03f, 0.03f, 0.03f)) * observedArea, 1.f);
-	//outColor = vec4((lambert+phong)*observedArea, 1.f);
 }
