@@ -26,7 +26,7 @@ layout(location = 3) out vec3 fragViewDirection;
 void main() {
     gl_Position = ubo.proj * ubo.view * mesh.model * vec4(inPosition, 1.0);
 
-    fragViewDirection = normalize(vec3(ubo.view[2][0], ubo.view[2][1], ubo.view[2][2]) - vec3(gl_Position));
+    fragViewDirection = normalize(vec3(gl_Position) - vec3(ubo.view[2][0], ubo.view[2][1], ubo.view[2][2]));
 
     fragTexCoord = inTexCoord;
     fragNormal = normalize(mat3(mesh.model) * inNormal);

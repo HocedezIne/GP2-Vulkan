@@ -43,6 +43,12 @@ void VulkanBase::keyEvent(int key, int scancode, int action, int mods)
 		m_CameraPos -= m_CameraUp * m_CameraMovementSpeed * 10.f;
 	if (key == GLFW_KEY_E && (action == GLFW_REPEAT || action == GLFW_PRESS))
 		m_CameraPos += m_CameraUp * m_CameraMovementSpeed * 10.f;
+
+	if (key == GLFW_KEY_F3 && action == GLFW_PRESS)
+	{
+		//m_AluminiumPBR.CycleRenderMode();
+		//m_GorePBR.CycleRenderMode();
+	}
 }
 
 void VulkanBase::mouseMove(GLFWwindow* window, double xpos, double ypos)
