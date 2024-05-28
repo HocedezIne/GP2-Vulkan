@@ -36,7 +36,8 @@ float NormalDistribution_GGX(vec3 n, const vec3 h, float roughness)
 	const float a =  roughness * roughness;
 	const float dotNH = dot(n,h) * dot(n,h);
 
-	return a / (3.14159265358979323846f * (( dotNH*(a-1.f) +1.f) * ( dotNH*(a-1.f) +1.f)) );
+	const float denom = dotNH * a + (1.0 - dotNH);
+	return a / (3.14159265358979323846f * pow(denom, 2) );
 }
 
 float GeometryFunction_SchlickGGX(vec3 n, vec3 v, float roughness)
@@ -56,11 +57,6 @@ float GeometryFunction_Smith(vec3 n, vec3 v, vec3 l, float roughness)
 void main() {
 	// values from maps + light direction
     vec3 albedo = texture(diffuseSampler, fragTexCoord).rgb;
-	if(rendermode.mode == 1)
-	{
-		outColor = vec4(albedo, 1.f);
-		return;
-	}
 
 	vec3 normalMap = texture(normalSampler, fragTexCoord).rgb;
     float roughnessValue = clamp(texture(roughnessSampler, fragTexCoord).x, 0.01f, 0.99f);
@@ -96,7 +92,7 @@ void main() {
 	const float D = NormalDistribution_GGX(normal, h, roughnessValue*roughnessValue);
 	const float G = GeometryFunction_Smith(normal, fragViewDirection, lightDirection, roughnessValue*roughnessValue);
 
-	const float divisor = ((3.14159265358979323846f * dot(normal, fragViewDirection)));
+	const float divisor = 4* dot(fragViewDirection, normal) * dot(lightDirection, normal);
 	vec3 specular = F*D*G;
 	specular /= divisor;
 
@@ -108,6 +104,12 @@ void main() {
 
 	vec3 kd = ( abs(metalnessValue - 0) < 1e-5f ) ? 1.f - F : vec3(0.f);
 	const vec3 diffuse = Lambert(kd, albedo);
+
+	if(rendermode.mode == 1)
+	{
+		outColor = vec4(diffuse, 1.f);
+		return;
+	}
 
 	outColor = vec4(radiance * (diffuse + specular) * observedArea ,0.f);
 }
