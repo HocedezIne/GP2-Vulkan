@@ -10,9 +10,9 @@ public:
 	virtual ~GP2_PBRSpecularPipeline() = default;
 
 	void SetTextureMaps(const VulkanContext& context, const std::string& diffuse, const std::string& normal,
-		const std::string& gloss, const std::string& specular, QueueFamilyIndices queueFamInd, VkQueue graphicsQueue);
+		const std::string& gloss, const std::string& specular, QueueFamilyIndices queueFamInd, VkQueue graphicsQueue) override;
 
-	void Initialize(const VulkanContext& context, size_t descriptorPoolCount);
+	void Initialize(const VulkanContext& context, size_t descriptorPoolCount) override;
 	void CleanUp() override;
 
 private:
@@ -71,7 +71,7 @@ void GP2_PBRSpecularPipeline<UBO, Vertex>::Initialize(const VulkanContext& conte
 	m_DescriptorPool->Initialize(context, imageDatas.size());
 	m_DescriptorPool->CreateDescriptorSets(imageDatas);
 
-	GP2_PBRBasePipeline<UBO, Vertex>::Initialize(context);
+	GP2_PBRBasePipeline<UBO, Vertex>::Initialize(context, descriptorPoolCount);
 }
 
 template <class UBO, class Vertex>

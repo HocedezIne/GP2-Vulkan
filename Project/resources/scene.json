@@ -1,0 +1,75 @@
+{
+   "pipelines":[
+    {
+      "pipeline": "PBRSpecular",
+      "vertex file": "shaders/PBRSpecularShader.vert.spv",
+      "fragment file": "shaders/PBRSpecularShader.frag.spv",
+      "texture files": [
+        "resources/vehicle_diffuse.png",
+        "resources/vehicle_normal.png",
+        "resources/vehicle_gloss.png",
+        "resources/vehicle_specular.png"
+      ],
+      "objects": [
+        {
+          "file": "resources/vehicle.obj",
+          "winding": false,
+          "translation": [ 0.0, 0.0, 0.0 ],
+          "rotation angle": 0.0,
+          "rotation axis": [ 1.0, 1.0, 1.0 ],
+          "scale": [ 1.0, 1.0, 1.0 ]
+        }
+      ]
+    },
+    {
+      "pipeline": "PBRMetalness",
+      "vertex file": "shaders/PBRMetallicShader.vert.spv",
+      "fragment file": "shaders/PBRMetallicShader.frag.spv",
+      "texture files": [
+        "resources/TCom_ScratchedAluminium_Old_1K_albedo.png",
+        "resources/TCom_ScratchedAluminium_Old_1K_normal.png",
+        "resources/TCom_ScratchedAluminium_Old_1K_metallic.png",
+        "resources/TCom_ScratchedAluminium_Old_1K_roughness.png"
+      ],
+      "objects": [
+        {
+          "file": "resources/sphere.obj",
+          "winding": true,
+          "translation": [ -10.0, 15.0, 0.0 ],
+          "rotation angle": 0.0,
+          "rotation axis": [ 1.0, 1.0, 1.0 ],
+          "scale": [ 0.5, 0.5, 0.5 ]
+        }
+      ]
+    },
+    {
+      "pipeline": "PBRMetalness",
+      "vertex file": "shaders/PBRMetallicShader.vert.spv",
+      "fragment file": "shaders/PBRMetallicShader.frag.spv",
+      "texture files": [
+        "resources/TCom_Gore_1K_albedo.png",
+        "resources/TCom_Gore_1K_normal.png",
+        "resources/TCom_Gore_1K_metalness.png",
+        "resources/TCom_Gore_1K_roughness.png"
+      ],
+      "objects": [
+        {
+          "file": "resources/sphere.obj",
+          "winding": true,
+          "translation": [ 10.0, 15.0, 0.0 ],
+          "rotation angle": 0.0,
+          "rotation axis": [ 1.0, 1.0, 1.0 ],
+          "scale": [ 0.5, 0.5, 0.5 ]
+        },
+        {
+          "file": "resources/simple_cube.obj",
+          "winding": true,
+          "translation": [ 0.0, 15.0, 0.0 ],
+          "rotation angle": 0.0,
+          "rotation axis": [ 1.0, 1.0, 1.0 ],
+          "scale": [ 1.0, 1.0, 1.0 ]
+        }
+      ]
+    }
+   ]
+}

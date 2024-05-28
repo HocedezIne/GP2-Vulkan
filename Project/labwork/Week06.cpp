@@ -100,13 +100,11 @@ void VulkanBase::drawFrame() {
 	m_GP3D.SetUBO(ubo, 0);
 	m_GP3D.Record(m_CommandBuffer, swapChainExtent, CURRENT_FRAME);
 
-	m_VehiclePBR.SetUBO(ubo, 0);
-	m_VehiclePBR.Record(m_CommandBuffer, swapChainExtent, CURRENT_FRAME);
-
-	m_AluminiumPBR.SetUBO(ubo, 0);
-	m_AluminiumPBR.Record(m_CommandBuffer, swapChainExtent, CURRENT_FRAME);
-	m_GorePBR.SetUBO(ubo, 0);
-	m_GorePBR.Record(m_CommandBuffer, swapChainExtent, CURRENT_FRAME);
+	for (auto& pipeline : m_PBRPipelines)
+	{
+		pipeline->SetUBO(ubo, 0);
+		pipeline->Record(m_CommandBuffer, swapChainExtent, CURRENT_FRAME);
+	}
 
 	m_Yaw = 0;
 	m_Pitch = 0;

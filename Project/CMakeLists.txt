@@ -1,4 +1,5 @@
 file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/resources" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}")
+file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/3rdParty" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}")
 
 # Source files
 set(SHADER_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/shaders")
@@ -48,7 +49,8 @@ set(SOURCES
     "GP2_UniformBufferObject.h" 
     "GP2_ImageBuffer.h" "GP2_ImageBuffer.cpp" 
     "GP2_DepthBuffer.h" "GP2_DepthBuffer.cpp" 
-    "GP2_PBRSpecularPipeline.h" "GP2_PBRMetalnessPipeline.h" "GP2_PBRBasePipeline.h")
+    "GP2_PBRSpecularPipeline.h" "GP2_PBRMetalnessPipeline.h" "GP2_PBRBasePipeline.h" 
+    "jsonParser.h")
 
 set(THIRD_PARTY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/3rdParty")
 set(THIRD_PARTY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/resources")

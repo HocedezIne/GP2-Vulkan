@@ -10,7 +10,7 @@ public:
 	virtual ~GP2_PBRMetalnessPipeline() = default;
 
 	void SetTextureMaps(const VulkanContext& context, const std::string& diffuse, const std::string& normal,
-		const std::string& metalness, const std::string& roughness, QueueFamilyIndices queueFamInd, VkQueue graphicsQueue);
+		const std::string& metalness, const std::string& roughness, QueueFamilyIndices queueFamInd, VkQueue graphicsQueue) override;
 
 	virtual void Initialize(const VulkanContext& context, size_t descriptorPoolCount);
 	virtual void CleanUp() override;
@@ -71,7 +71,7 @@ void GP2_PBRMetalnessPipeline<UBO, Vertex>::Initialize(const VulkanContext& cont
 	m_DescriptorPool->Initialize(context, imageDatas.size());
 	m_DescriptorPool->CreateDescriptorSets(imageDatas);
 
-	GP2_PBRBasePipeline<UBO, Vertex>::Initialize(context);
+	GP2_PBRBasePipeline<UBO, Vertex>::Initialize(context, descriptorPoolCount);
 }
 
 template <class UBO, class Vertex>

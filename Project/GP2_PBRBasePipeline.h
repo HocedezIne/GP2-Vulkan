@@ -23,8 +23,11 @@ public:
 	GP2_PBRBasePipeline(const std::string& vertexShaderFile, const std::string& fragmentShaderFile);
 	virtual ~GP2_PBRBasePipeline() = default;
 
-	virtual void Initialize(const VulkanContext& context);
+	virtual void Initialize(const VulkanContext& context, size_t descriptorPoolCount);
 	virtual void CleanUp();
+
+	virtual void SetTextureMaps(const VulkanContext& context, const std::string& diffuse, const std::string& normal,
+		const std::string& gloss, const std::string& specular, QueueFamilyIndices queueFamInd, VkQueue graphicsQueue) = 0;
 
 	void Record(const GP2_CommandBuffer& cmdBuffer, VkExtent2D extent, int imageIndex);
 
@@ -83,7 +86,7 @@ void GP2_PBRBasePipeline<UBO, Vertex>::CleanUp()
 }
 
 template <class UBO, class Vertex>
-void GP2_PBRBasePipeline<UBO, Vertex>::Initialize(const VulkanContext& context)
+void GP2_PBRBasePipeline<UBO, Vertex>::Initialize(const VulkanContext& context, size_t descriptorPoolCount)
 {
 	m_Device = context.device;
 	m_RenderPass = context.renderPass;

@@ -102,7 +102,7 @@ void main() {
 
 	if(rendermode.mode == 3)
 	{
-		outColor = vec4(specular, 1.f);
+		outColor = vec4(divisor,divisor,divisor, 1.f);
 		return;
 	}
 
