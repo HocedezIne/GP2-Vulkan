@@ -73,7 +73,6 @@ void VulkanBase::mouseEvent(GLFWwindow* window, int button, int action, int mods
 {
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
 	{
-		std::cout << "left mouse button pressed\n";
 		double xpos, ypos;
 		glfwGetCursorPos(window, &xpos, &ypos); 
 		m_PrevMousePos.x = static_cast<float>(xpos);

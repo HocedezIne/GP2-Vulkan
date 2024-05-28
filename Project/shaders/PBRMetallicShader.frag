@@ -42,7 +42,7 @@ float NormalDistribution_GGX(vec3 n, const vec3 h, float roughness)
 float GeometryFunction_SchlickGGX(vec3 n, vec3 v, float roughness)
 {
 	const float dotNV = dot(n,v);
-	return dotNV / (dotNV * (1-roughness) + roughness);
+	return (dotNV*2) / ((dotNV) + sqrt(roughness + (1-roughness) * (dotNV*dotNV)));
 }
 
 float GeometryFunction_Smith(vec3 n, vec3 v, vec3 l, float roughness)
@@ -63,7 +63,7 @@ void main() {
 	}
 
 	vec3 normalMap = texture(normalSampler, fragTexCoord).rgb;
-    float roughnessValue = texture(roughnessSampler, fragTexCoord).x;
+    float roughnessValue = clamp(texture(roughnessSampler, fragTexCoord).x, 0.01f, 0.99f);
 	float metalnessValue = texture(metalnessSampler, fragTexCoord).x;
 
 	// calculate normals
@@ -78,7 +78,7 @@ void main() {
 		return;
 	}
 
-	const vec3 lightDirection = vec3(0.577f, 0.577f, 0.577f);
+	const vec3 lightDirection = normalize(vec3(0.577f, 0.577f, 0.577f));
 	const vec3 radiance = vec3(7.f,7.f,7.f);
 
 	const float observedArea = dot(normal, lightDirection);
@@ -88,7 +88,7 @@ void main() {
 		return;
 	}
 
-	const vec3 f0 = ( abs(metalnessValue - 0) < 1.19209290e-07f ) ? vec3(0.04f, 0.04f, 0.04f) : albedo;
+	const vec3 f0 = ( abs(metalnessValue - 0) < 1e-5f ) ? vec3(0.04f, 0.04f, 0.04f) : albedo;
 
 	const vec3 h = normalize(fragViewDirection + lightDirection);
 
@@ -96,17 +96,17 @@ void main() {
 	const float D = NormalDistribution_GGX(normal, h, roughnessValue*roughnessValue);
 	const float G = GeometryFunction_Smith(normal, fragViewDirection, lightDirection, roughnessValue*roughnessValue);
 
-	const float divisor = 4* dot(fragViewDirection, normal) * dot(lightDirection, normal);
-	vec3 specular = D*F*G;
+	const float divisor = ((3.14159265358979323846f * dot(normal, fragViewDirection)));
+	vec3 specular = F*D*G;
 	specular /= divisor;
 
 	if(rendermode.mode == 3)
 	{
-		outColor = vec4(divisor,divisor,divisor, 1.f);
+		outColor = vec4(specular, 1.f);
 		return;
 	}
 
-	vec3 kd = ( abs(metalnessValue - 0) < 1.19209290e-07f ) ? 1.f - F : vec3(0.f);
+	vec3 kd = ( abs(metalnessValue - 0) < 1e-5f ) ? 1.f - F : vec3(0.f);
 	const vec3 diffuse = Lambert(kd, albedo);
 
 	outColor = vec4(radiance * (diffuse + specular) * observedArea ,0.f);
